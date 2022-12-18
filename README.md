@@ -35,3 +35,4 @@ To get swag, you need to enter: `go install github.com/swaggo/swag/cmd/swag@late
     - [ ] Choose front-end framework
     - [ ] Login/Logout component
     - [ ] Create form and component to Add/Update redirections
+    - [ ] Create Cache Map to get in cache all entries of db for faster execution
