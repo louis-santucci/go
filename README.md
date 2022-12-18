@@ -19,6 +19,10 @@ For this project, the selected language is the Go for the back-end part.
 - A GNU Compiler Collection (GCC) (Some dependencies use C compiled codes)
 - Swag (if you want to contribute and then add some endpoints on Swagger-UI)
 
+## How-to build the project
+
+- You need them to go to goApp folder and then run `go install .`
+
 ## Swagger
 
 The project contains a Swagger configuration built with [swag](https://github.com/swaggo/swag)
