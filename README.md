@@ -35,6 +35,7 @@ To get swag, you need to enter: `go install github.com/swaggo/swag/cmd/swag@late
     - [ ] Finalize all CRUD endpoints
     - [ ] Secure API by using JWT
     - [ ] Enable HTTPS
+    - [ ] Deploy on IIS on Windows
 - Then, we need to implement a front-end application so that when typing go/{redirection}, we will be either redirected to the good redirection, else we will be invited to create a new redirection for the entered redirection.
     - [ ] Choose front-end framework
     - [ ] Login/Logout component
