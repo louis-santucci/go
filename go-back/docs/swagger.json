@@ -1,0 +1,65 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "A redirection app made in Go with Gin Framework.",
+        "title": "GoApp",
+        "contact": {
+            "name": "SANTUCCI Louis",
+            "email": "louissantucci1998@gmail.com"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:9090",
+    "paths": {
+        "/api/redirection": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "redirection"
+                ],
+                "summary": "Get all redirections",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Redirection"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Redirection": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "redirect_url": {
+                    "type": "string"
+                },
+                "shortcut": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "views": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

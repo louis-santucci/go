@@ -1,0 +1,42 @@
+definitions:
+  models.Redirection:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      redirect_url:
+        type: string
+      shortcut:
+        type: string
+      updated_at:
+        type: string
+      views:
+        type: integer
+    type: object
+host: localhost:9090
+info:
+  contact:
+    email: louissantucci1998@gmail.com
+    name: SANTUCCI Louis
+  description: A redirection app made in Go with Gin Framework.
+  title: GoApp
+  version: "1.0"
+paths:
+  /api/redirection:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Redirection'
+            type: array
+      summary: Get all redirections
+      tags:
+      - redirection
+swagger: "2.0"
