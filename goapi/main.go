@@ -1,9 +1,9 @@
 package main
 
 import (
-	"go-go.com/go-back/database"
-	_ "go-go.com/go-back/docs"
-	"go-go.com/go-back/routes"
+	"louissantucci/goapi/database"
+	_ "louissantucci/goapi/docs"
+	"louissantucci/goapi/routes"
 )
 
 // SWAGGER CONFIG

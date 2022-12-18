@@ -1,9 +1,9 @@
 package database
 
 import (
-	"go-go.com/go-back/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"louissantucci/goapi/models"
 )
 
 var DB *gorm.DB

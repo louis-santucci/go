@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"go-go.com/go-back/database"
-	"go-go.com/go-back/errors"
-	"go-go.com/go-back/models"
+	"louissantucci/goapi/database"
+	"louissantucci/goapi/errors"
+	"louissantucci/goapi/models"
 	"net/http"
 	"time"
 )
