@@ -1,5 +1,4 @@
-module go-go.com/go-back
-
+module louissantucci/goapi
 go 1.19
 
 require (
