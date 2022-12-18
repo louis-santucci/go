@@ -11,11 +11,11 @@ import (
 // @version         1.0
 // @description     A redirection app made in Go with Gin Framework.
 
-// @contact.name   SANTUCCI Louis
-// @contact.email  louissantucci1998@gmail.com
+// @contact.name   	SANTUCCI Louis
+// @contact.email  	louissantucci1998@gmail.com
 
-// @host      localhost:9090
-// @BasePath
+// @host      		localhost:9090
+// @BasePath		/api
 func main() {
 
 	// Connect to SQLite DB
