@@ -5,6 +5,7 @@ import (
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"go-go.com/go-back/controllers"
+	"go-go.com/go-back/errors"
 )
 
 func SetupRouter() *gin.Engine {
@@ -23,12 +24,13 @@ func SetupRouter() *gin.Engine {
 		api.POST("/redirection", controllers.CreateRedirection)
 		api.POST("/redirection/:id", controllers.UpdateRedirection)
 		api.PUT("/redirection/:id", controllers.IncrementRedirectionView)
+		api.DELETE("/redirection/:id", controllers.DeleteRedirection)
 	}
 
 	// No routes
 
 	router.NoRoute(func(c *gin.Context) {
-		c.JSON(404, gin.H{"code": "NOT_FOUND", "message": "Not found"})
+		c.JSON(404, gin.H{"code": errors.NotFoundError, "message": "Not found"})
 	})
 
 	return router
