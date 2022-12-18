@@ -1,3 +1,4 @@
+basePath: /api
 definitions:
   models.Redirection:
     properties:
@@ -14,6 +15,16 @@ definitions:
       views:
         type: integer
     type: object
+  models.RedirectionInput:
+    properties:
+      redirect_url:
+        type: string
+      shortcut:
+        type: string
+    required:
+    - redirect_url
+    - shortcut
+    type: object
 host: localhost:9090
 info:
   contact:
@@ -23,7 +34,7 @@ info:
   title: GoApp
   version: "1.0"
 paths:
-  /api/redirection:
+  /redirection:
     get:
       consumes:
       - application/json
@@ -37,6 +48,133 @@ paths:
               $ref: '#/definitions/models.Redirection'
             type: array
       summary: Get all redirections
+      tags:
+      - redirection
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: query params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.RedirectionInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Redirection'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+      summary: Creates a new redirection
+      tags:
+      - redirection
+  /redirection/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: boolean
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Deletes a redirection in function of its ID
+      tags:
+      - redirection
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Redirection'
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Get one redirection in function of its ID
+      tags:
+      - redirection
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: query params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.RedirectionInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Redirection'
+            type: array
+        "400":
+          description: Bad Request
+          schema: {}
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Updates a redirection in function of its ID
+      tags:
+      - redirection
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Redirection'
+            type: array
+        "404":
+          description: Not Found
+          schema: {}
+      summary: Increments number of view for one redirection in fucntion of its ID
       tags:
       - redirection
 swagger: "2.0"
