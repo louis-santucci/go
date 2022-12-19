@@ -25,6 +25,44 @@ definitions:
     - redirect_url
     - shortcut
     type: object
+  models.SignedResponse:
+    properties:
+      jwt_token:
+        type: string
+      message:
+        type: string
+    type: object
+  models.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.UserInput:
+    properties:
+      email:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+    type: object
+  models.UserLogin:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
 host: localhost:9090
 info:
   contact:
@@ -54,6 +92,11 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: query params
         in: body
         name: request
@@ -72,6 +115,8 @@ paths:
         "400":
           description: Bad Request
           schema: {}
+      security:
+      - ApiKeyAuth: []
       summary: Creates a new redirection
       tags:
       - redirection
@@ -124,6 +169,11 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: id
         in: path
         name: id
@@ -150,6 +200,8 @@ paths:
         "404":
           description: Not Found
           schema: {}
+      security:
+      - ApiKeyAuth: []
       summary: Updates a redirection in function of its ID
       tags:
       - redirection
@@ -177,4 +229,81 @@ paths:
       summary: Increments number of view for one redirection in fucntion of its ID
       tags:
       - redirection
+  /user/edit/{id}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: query params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      security:
+      - ApiKeyAuth: []
+      summary: Edits user in DB
+      tags:
+      - user
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: query params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.SignedResponse'
+        "403":
+          description: Forbidden
+      summary: Generates JWT token by verifying user credentials
+      tags:
+      - user
+  /user/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: query params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Creates new User in DB
+      tags:
+      - user
 swagger: "2.0"
