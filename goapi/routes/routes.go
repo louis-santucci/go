@@ -6,6 +6,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"louissantucci/goapi/controllers"
 	"louissantucci/goapi/errors"
+	"louissantucci/goapi/middlewares/jwt"
 )
 
 func SetupRouter() *gin.Engine {
@@ -19,12 +20,22 @@ func SetupRouter() *gin.Engine {
 
 	api := router.Group("/api")
 	{
-		api.GET("/redirection", controllers.GetRedirections)
-		api.GET("/redirection/:id", controllers.GetRedirection)
-		api.POST("/redirection", controllers.CreateRedirection)
-		api.POST("/redirection/:id", controllers.UpdateRedirection)
-		api.PUT("/redirection/:id", controllers.IncrementRedirectionView)
-		api.DELETE("/redirection/:id", controllers.DeleteRedirection)
+		redirection := api.Group("/redirection")
+		{
+			redirection.GET("", controllers.GetRedirections)
+			redirection.GET("/:id", controllers.GetRedirection)
+			redirection.POST("", controllers.CreateRedirection, jwt.JWTTokenCheck)
+			redirection.POST("/:id", controllers.UpdateRedirection, jwt.JWTTokenCheck)
+			redirection.PUT("/:id", controllers.IncrementRedirectionView)
+			redirection.DELETE("/:id", controllers.DeleteRedirection, jwt.JWTTokenCheck)
+		}
+
+		user := api.Group("/user")
+		{
+			user.POST("/login", controllers.LoginUser)
+			user.POST("/register", controllers.RegisterUser)
+			user.POST("/edit/:id", controllers.EditUser, jwt.JWTTokenCheck)
+		}
 	}
 
 	// No routes
