@@ -1,9 +1,11 @@
 package routes
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"louissantucci/goapi/config"
 	"louissantucci/goapi/controllers"
 	"louissantucci/goapi/errors"
 	"louissantucci/goapi/middlewares/jwt"
@@ -43,6 +45,9 @@ func SetupRouter() *gin.Engine {
 	router.NoRoute(func(c *gin.Context) {
 		c.JSON(404, gin.H{"code": errors.NotFoundError, "message": "Not found"})
 	})
+
+	// CORS Config
+	router.Use(cors.New(config.CorsConfig()))
 
 	return router
 }
