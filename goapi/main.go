@@ -1,6 +1,7 @@
 package main
 
 import (
+	"louissantucci/goapi/config"
 	"louissantucci/goapi/database"
 	_ "louissantucci/goapi/docs"
 	"louissantucci/goapi/routes"
@@ -19,7 +20,7 @@ import (
 func main() {
 
 	// Connect to SQLite DB
-	database.ConnectDatabase(db_filename)
+	database.ConnectDatabase(config.Db_filename)
 
 	// Creating GIN Router for endpoints
 	router := routes.SetupRouter()
