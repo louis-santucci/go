@@ -141,7 +141,7 @@ func LoginUser(c *gin.Context) {
 	}
 	credentialsError := user.ComparePassword(loginRequest.Password)
 	if credentialsError != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": errors.UnauthorizedError})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": errors.UnauthorizedError + ": " + credentialsError.Error()})
 		return
 	}
 	tokenStr, err := jwt.GenerateJWT(user.Email)
