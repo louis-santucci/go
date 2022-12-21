@@ -25,7 +25,12 @@ func main() {
 	// Creating GIN Router for endpoints
 	router := routes.SetupRouter()
 
-	err := router.Run(":9090")
+	var err error
+	if config.TLS_enabled {
+		err = router.RunTLS(":9090", "./certs/server.pem", "./certs/server-key.pem")
+	} else {
+		err = router.Run(":9090")
+	}
 	if err != nil {
 		panic(err)
 	}
