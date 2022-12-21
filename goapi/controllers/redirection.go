@@ -81,6 +81,8 @@ func IncrementRedirectionView(c *gin.Context) {
 
 // UpdateRedirection 			godoc
 // @Summary						Updates a redirection in function of its ID
+// @Security ApiKeyAuth
+// @param Authorization header string true "Authorization"
 // @Tags						redirection
 // @Accept						json
 // @Produce						json
@@ -114,7 +116,11 @@ func UpdateRedirection(c *gin.Context) {
 		CreatedAt:   redirection.CreatedAt,
 		UpdatedAt:   time.Now(),
 	}
-	database.DB.Model(&redirection).Updates(updatedRedirection)
+	err = database.DB.Model(&redirection).Updates(updatedRedirection).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"data": redirection})
 }
@@ -123,6 +129,8 @@ func UpdateRedirection(c *gin.Context) {
 
 // CreateRedirection			godoc
 // @Summary 					Creates a new redirection
+// @Security ApiKeyAuth
+// @param Authorization header string true "Authorization"
 // @Tags						redirection
 // @Accept						json
 // @Produce						json
@@ -148,7 +156,7 @@ func CreateRedirection(c *gin.Context) {
 	}
 	err = database.DB.Create(&redirection).Error
 	if err != nil {
-		c.JSON(http.StatusForbidden, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"data": redirection})
