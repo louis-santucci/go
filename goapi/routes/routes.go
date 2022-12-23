@@ -7,6 +7,7 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"louissantucci/goapi/config"
 	"louissantucci/goapi/controllers"
+	"louissantucci/goapi/middlewares"
 	"louissantucci/goapi/middlewares/jwt"
 	"louissantucci/goapi/responses"
 	"net/http"
@@ -29,7 +30,7 @@ func SetupRouter() *gin.Engine {
 			redirection.GET("/:id", controllers.GetRedirection)
 			redirection.POST("", jwt.JWTTokenCheck, controllers.CreateRedirection)
 			redirection.POST("/:id", jwt.JWTTokenCheck, controllers.EditRedirection)
-			redirection.PUT("/:id", controllers.IncrementRedirectionView)
+			redirection.PUT("/:id", middlewares.AngolarTokenCheck, controllers.IncrementRedirectionView)
 			redirection.PATCH("/:id", jwt.JWTTokenCheck, controllers.ResetRedirectionView)
 			redirection.DELETE("/:id", jwt.JWTTokenCheck, controllers.DeleteRedirection)
 		}
