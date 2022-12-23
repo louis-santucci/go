@@ -7,8 +7,9 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"louissantucci/goapi/config"
 	"louissantucci/goapi/controllers"
-	"louissantucci/goapi/errors"
 	"louissantucci/goapi/middlewares/jwt"
+	"louissantucci/goapi/responses"
+	"net/http"
 )
 
 func SetupRouter() *gin.Engine {
@@ -26,24 +27,25 @@ func SetupRouter() *gin.Engine {
 		{
 			redirection.GET("", controllers.GetRedirections)
 			redirection.GET("/:id", controllers.GetRedirection)
-			redirection.POST("", controllers.CreateRedirection, jwt.JWTTokenCheck)
-			redirection.POST("/:id", controllers.UpdateRedirection, jwt.JWTTokenCheck)
+			redirection.POST("", jwt.JWTTokenCheck, controllers.CreateRedirection)
+			redirection.POST("/:id", jwt.JWTTokenCheck, controllers.EditRedirection)
 			redirection.PUT("/:id", controllers.IncrementRedirectionView)
-			redirection.DELETE("/:id", controllers.DeleteRedirection, jwt.JWTTokenCheck)
+			redirection.DELETE("/:id", jwt.JWTTokenCheck, controllers.DeleteRedirection)
 		}
 
 		user := api.Group("/user")
 		{
 			user.POST("/login", controllers.LoginUser)
 			user.POST("/register", controllers.RegisterUser)
-			user.POST("/edit/:id", controllers.EditUser, jwt.JWTTokenCheck)
+			user.POST("/edit/:id", jwt.JWTTokenCheck, controllers.EditUser)
 		}
 	}
 
 	// No routes
 
 	router.NoRoute(func(c *gin.Context) {
-		c.JSON(404, gin.H{"code": errors.NotFoundError, "message": "Not found"})
+		errorData := "Route NOT FOUND"
+		c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, errorData))
 	})
 
 	// CORS Config
