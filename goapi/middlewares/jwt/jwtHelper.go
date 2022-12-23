@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt/v4"
 	"louissantucci/goapi/config"
+	"strings"
 	"time"
 )
 
@@ -11,13 +12,19 @@ var jwtKey = []byte(config.Jwt_secret)
 
 type Claim struct {
 	Email string `json:"email"`
+	Name  string `json:"name"`
 	jwt.RegisteredClaims
 }
 
-func GenerateJWT(email string) (tokenString string, err error) {
+func GetSecretKey() string {
+	return config.Jwt_secret
+}
+
+func GenerateJWT(email string, name string) (tokenString string, err error) {
 	expirationTime := time.Now().Add(1 * time.Hour)
 	claims := &Claim{
 		Email: email,
+		Name:  name,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
@@ -50,25 +57,31 @@ func GetEmailFromToken(jwtToken string) (string, error) {
 
 }
 
-func ValidateToken(signedToken string) (err error) {
-	token, err := jwt.ParseWithClaims(
-		signedToken,
-		&Claim{},
-		func(token *jwt.Token) (interface{}, error) {
-			return jwtKey, nil
-		},
-	)
+func ExtractBearerToken(header string) (string, error) {
+	if header == "" {
+		return "", errors.New("no header given")
+	}
+
+	jwtToken := strings.Split(header, " ")
+	if len(jwtToken) != 2 {
+		return "", errors.New("incorrect Authorization header format")
+	}
+
+	return jwtToken[1], nil
+}
+
+func ParseToken(jwtToken string) (*jwt.Token, error) {
+	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
+		_, OK := token.Method.(*jwt.SigningMethodHMAC)
+		if !OK {
+			return nil, errors.New("bad signed method received")
+		}
+		return []byte(GetSecretKey()), nil
+	})
+
 	if err != nil {
-		return
+		return nil, errors.New("bad JWT token")
 	}
-	claims, ok := token.Claims.(*Claim)
-	if !ok {
-		err = errors.New("couldn't parse claims")
-		return
-	}
-	if claims.ExpiresAt.Time.Unix() < time.Now().Local().Unix() {
-		err = errors.New("token expired")
-		return
-	}
-	return
+
+	return token, nil
 }
