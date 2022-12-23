@@ -3,7 +3,7 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"louissantucci/goapi/database"
-	"louissantucci/goapi/errors"
+	"louissantucci/goapi/error-constants"
 	"louissantucci/goapi/middlewares/jwt"
 	"louissantucci/goapi/models"
 	"louissantucci/goapi/responses"
@@ -71,27 +71,11 @@ func RegisterUser(c *gin.Context) {
 // @Failure						500 	{object} 	responses.ErrorResponse
 // @Router						/user/edit/{id} [post]
 func EditUser(c *gin.Context) {
-	jwtToken, err := jwt.ExtractBearerToken(c.GetHeader("Authorization"))
+	id := c.Param("id")
+	authHeader := c.GetHeader("Authorization")
+	errCode, err, user := jwt.IsIdMatchingJwtToken(id, authHeader)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
-		return
-	}
-	email, err := jwt.GetEmailFromToken(jwtToken)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
-		return
-	}
-
-	var user models.User
-
-	err = database.DB.Where("id = ?", c.Param("id")).First(&user).Error
-	if err != nil {
-		c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, err.Error()))
-		return
-	}
-
-	if user.Email != email {
-		c.JSON(http.StatusForbidden, responses.NewErrorResponse(http.StatusForbidden, err.Error()))
+		c.JSON(errCode, responses.NewErrorResponse(errCode, err.Error()))
 		return
 	}
 
@@ -104,8 +88,14 @@ func EditUser(c *gin.Context) {
 	}
 	user.Name = input.Name
 	user.Email = input.Email
-	user.Password = input.Password
 	user.UpdatedAt = time.Now()
+
+	err = user.HashPassword(input.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
+
 	err = database.DB.Model(&user).Updates(user).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
@@ -146,7 +136,7 @@ func LoginUser(c *gin.Context) {
 	}
 	credentialsError := user.ComparePassword(loginRequest.Password)
 	if credentialsError != nil {
-		errorData := errors.UnauthorizedError + ": " + credentialsError.Error()
+		errorData := error_constants.UnauthorizedError + ": " + credentialsError.Error()
 		c.JSON(http.StatusUnauthorized, responses.NewErrorResponse(http.StatusUnauthorized, errorData))
 		return
 	}

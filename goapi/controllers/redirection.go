@@ -3,9 +3,11 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"louissantucci/goapi/database"
+	"louissantucci/goapi/middlewares/jwt"
 	"louissantucci/goapi/models"
 	"louissantucci/goapi/responses"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -77,6 +79,47 @@ func IncrementRedirectionView(c *gin.Context) {
 	c.JSON(http.StatusOK, responses.NewOKResponse(redirection))
 }
 
+// PATCH /redirection/:id
+
+// ResetRedirectionView 		godoc
+// @Summary 					Resets number of view for one redirection in fucntion of its ID
+// @Security ApiKeyAuth
+// @param Authorization header string true "Authorization"
+// @Tags						redirection
+// @Accept						json
+// @Produce						json
+// @Param						id 		path		int true "id"
+// @Success						200 	{object} 	responses.OKResponse
+// @Failure						404 	{object} 	responses.ErrorResponse
+// @Router						/redirection/{id} [patch]
+func ResetRedirectionView(c *gin.Context) {
+	var redirection models.Redirection
+
+	err := database.DB.Where("id = ?", c.Param("id")).First(&redirection).Error
+	if err != nil {
+		c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, err.Error()))
+		return
+	}
+
+	authHeader := c.GetHeader("Authorization")
+	errCode, err, _ := jwt.IsIdMatchingJwtToken(strconv.FormatInt(redirection.CreatorId, 10), authHeader)
+	if err != nil {
+		c.JSON(errCode, responses.NewErrorResponse(errCode, err.Error()))
+		return
+	}
+
+	// Reset
+	redirection.Views = 0
+
+	err = database.DB.Model(&redirection).Updates(redirection).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
+
+	c.JSON(http.StatusOK, responses.NewOKResponse(redirection))
+}
+
 // POST /redirection/:id
 
 // EditRedirection 			godoc
@@ -99,6 +142,13 @@ func EditRedirection(c *gin.Context) {
 	err := database.DB.Where("id = ?", c.Param("id")).First(&redirection).Error
 	if err != nil {
 		c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, err.Error()))
+		return
+	}
+
+	authHeader := c.GetHeader("Authorization")
+	errCode, err, _ := jwt.IsIdMatchingJwtToken(strconv.FormatInt(redirection.CreatorId, 10), authHeader)
+	if err != nil {
+		c.JSON(errCode, responses.NewErrorResponse(errCode, err.Error()))
 		return
 	}
 
@@ -144,12 +194,34 @@ func CreateRedirection(c *gin.Context) {
 		return
 	}
 
+	// Get User ID
+	header := c.GetHeader("Authorization")
+	tokenStr, err := jwt.ExtractBearerToken(header)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
+
+	email, err := jwt.GetEmailFromToken(tokenStr)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
+	var user models.User
+
+	err = database.DB.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
+
 	// Redirection creation
 	redirection := models.Redirection{
 		Shortcut:    input.Shortcut,
 		RedirectUrl: input.RedirectUrl,
 		Views:       0,
 		CreatedAt:   time.Now(),
+		CreatorId:   user.ID,
 	}
 	err = database.DB.Create(&redirection).Error
 	if err != nil {
@@ -163,6 +235,8 @@ func CreateRedirection(c *gin.Context) {
 
 // DeleteRedirection			godoc
 // @Summary 					Deletes a redirection in function of its ID
+// @Security ApiKeyAuth
+// @param Authorization header string true "Authorization"
 // @Tags						redirection
 // @Accept						json
 // @Produce						json
@@ -181,6 +255,14 @@ func DeleteRedirection(c *gin.Context) {
 		return
 	}
 
+	authHeader := c.GetHeader("Authorization")
+	errCode, err, _ := jwt.IsIdMatchingJwtToken(strconv.FormatInt(redirection.CreatorId, 10), authHeader)
+	if err != nil {
+		c.JSON(errCode, responses.NewErrorResponse(errCode, err.Error()))
+		return
+	}
+
+	// Deletion
 	err = database.DB.Delete(&redirection).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))

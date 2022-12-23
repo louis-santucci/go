@@ -4,6 +4,9 @@ import (
 	"errors"
 	"github.com/golang-jwt/jwt/v4"
 	"louissantucci/goapi/config"
+	"louissantucci/goapi/database"
+	"louissantucci/goapi/models"
+	"net/http"
 	"strings"
 	"time"
 )
@@ -84,4 +87,28 @@ func ParseToken(jwtToken string) (*jwt.Token, error) {
 	}
 
 	return token, nil
+}
+
+func IsIdMatchingJwtToken(id string, header string) (int, error, *models.User) {
+	jwtToken, err := ExtractBearerToken(header)
+	if err != nil {
+		return http.StatusInternalServerError, err, nil
+	}
+	email, err := GetEmailFromToken(jwtToken)
+	if err != nil {
+		return http.StatusInternalServerError, err, nil
+	}
+
+	var user models.User
+
+	err = database.DB.Where("id = ?", id).First(&user).Error
+	if err != nil {
+		return http.StatusNotFound, err, nil
+	}
+
+	if user.Email != email {
+		err = errors.New("ID doesn't match the JWT auth token")
+		return http.StatusForbidden, err, nil
+	}
+	return 0, nil, &user
 }
