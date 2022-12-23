@@ -1,20 +1,5 @@
 basePath: /api
 definitions:
-  models.Redirection:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: integer
-      redirect_url:
-        type: string
-      shortcut:
-        type: string
-      updated_at:
-        type: string
-      views:
-        type: integer
-    type: object
   models.RedirectionInput:
     properties:
       redirect_url:
@@ -24,28 +9,6 @@ definitions:
     required:
     - redirect_url
     - shortcut
-    type: object
-  models.SignedResponse:
-    properties:
-      jwt_token:
-        type: string
-      message:
-        type: string
-    type: object
-  models.User:
-    properties:
-      created_at:
-        type: string
-      email:
-        type: string
-      id:
-        type: integer
-      name:
-        type: string
-      password:
-        type: string
-      updated_at:
-        type: string
     type: object
   models.UserInput:
     properties:
@@ -62,6 +25,19 @@ definitions:
         type: string
       password:
         type: string
+    type: object
+  responses.JWTResponse:
+    properties:
+      jwt_token:
+        type: string
+      status:
+        type: integer
+    type: object
+  responses.OKResponse:
+    properties:
+      data: {}
+      status:
+        type: integer
     type: object
 host: localhost:9090
 info:
@@ -82,9 +58,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Redirection'
-            type: array
+            $ref: '#/definitions/responses.OKResponse'
       summary: Get all redirections
       tags:
       - redirection
@@ -109,9 +83,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Redirection'
-            type: array
+            $ref: '#/definitions/responses.OKResponse'
         "400":
           description: Bad Request
           schema: {}
@@ -136,7 +108,7 @@ paths:
         "200":
           description: OK
           schema:
-            type: boolean
+            $ref: '#/definitions/responses.OKResponse'
         "404":
           description: Not Found
           schema: {}
@@ -158,7 +130,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Redirection'
+            $ref: '#/definitions/responses.OKResponse'
         "404":
           description: Not Found
           schema: {}
@@ -191,9 +163,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Redirection'
-            type: array
+            $ref: '#/definitions/responses.OKResponse'
         "400":
           description: Bad Request
           schema: {}
@@ -220,9 +190,7 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.Redirection'
-            type: array
+            $ref: '#/definitions/responses.OKResponse'
         "404":
           description: Not Found
           schema: {}
@@ -256,7 +224,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/responses.OKResponse'
       security:
       - ApiKeyAuth: []
       summary: Edits user in DB
@@ -279,7 +247,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.SignedResponse'
+            $ref: '#/definitions/responses.JWTResponse'
         "403":
           description: Forbidden
       summary: Generates JWT token by verifying user credentials
@@ -302,7 +270,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.User'
+            $ref: '#/definitions/responses.OKResponse'
       summary: Creates new User in DB
       tags:
       - user

@@ -16,7 +16,7 @@ import (
 // @Tags						redirection
 // @Accept						json
 // @Produce						json
-// @Success						200 	{array} 	models.Redirection
+// @Success						200 	{object} 	responses.OKResponse
 // @Router						/redirection [get]
 func GetRedirections(c *gin.Context) {
 	var redirections []models.Redirection
@@ -34,7 +34,7 @@ func GetRedirections(c *gin.Context) {
 // @Accept						json
 // @Produce						json
 // @Param						id 		path		int true "id"
-// @Success						200 	{object} 	models.Redirection
+// @Success						200 	{object} 	responses.OKResponse
 // @Failure						404 	{object} 	error
 // @Router						/redirection/{id} [get]
 func GetRedirection(c *gin.Context) {
@@ -57,7 +57,7 @@ func GetRedirection(c *gin.Context) {
 // @Accept						json
 // @Produce						json
 // @Param						id 		path		int true "id"
-// @Success						200 	{array} 	models.Redirection
+// @Success						200 	{object} 	responses.OKResponse
 // @Failure						404 	{object} 	error
 // @Router						/redirection/{id} [put]
 func IncrementRedirectionView(c *gin.Context) {
@@ -88,7 +88,7 @@ func IncrementRedirectionView(c *gin.Context) {
 // @Produce						json
 // @Param						id 		path		int true "id"
 // @Param						request body models.RedirectionInput true "query params"
-// @Success						200 	{object} 	models.Redirection
+// @Success						200 	{object} 	responses.OKResponse
 // @Failure						400 	{object} 	error
 // @Failure						404 	{object} 	error
 // @Router						/redirection/{id} [post]
@@ -130,7 +130,7 @@ func EditRedirection(c *gin.Context) {
 // @Accept						json
 // @Produce						json
 // @Param						request body models.RedirectionInput true "query params"
-// @Success						200 	{array} 	models.Redirection
+// @Success						200 	{object} 	responses.OKResponse
 // @Failure						400 	{object} 	error
 // @Router						/redirection [post]
 func CreateRedirection(c *gin.Context) {
@@ -165,7 +165,7 @@ func CreateRedirection(c *gin.Context) {
 // @Accept						json
 // @Produce						json
 // @Param						id 		path		int true "id"
-// @Success						200 	{object} 	boolean
+// @Success						200 	{object} 	responses.OKResponse
 // @Failure						404 	{object} 	error
 // @Router						/redirection/{id} [delete]
 func DeleteRedirection(c *gin.Context) {

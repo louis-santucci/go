@@ -35,10 +35,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Redirection"
-                            }
+                            "$ref": "#/definitions/responses.OKResponse"
                         }
                     }
                 }
@@ -81,10 +78,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Redirection"
-                            }
+                            "$ref": "#/definitions/responses.OKResponse"
                         }
                     },
                     "400": {
@@ -119,7 +113,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Redirection"
+                            "$ref": "#/definitions/responses.OKResponse"
                         }
                     },
                     "404": {
@@ -152,10 +146,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Redirection"
-                            }
+                            "$ref": "#/definitions/responses.OKResponse"
                         }
                     },
                     "404": {
@@ -209,10 +200,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Redirection"
-                            }
+                            "$ref": "#/definitions/responses.OKResponse"
                         }
                     },
                     "400": {
@@ -249,7 +237,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "boolean"
+                            "$ref": "#/definitions/responses.OKResponse"
                         }
                     },
                     "404": {
@@ -305,7 +293,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/responses.OKResponse"
                         }
                     }
                 }
@@ -338,7 +326,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.SignedResponse"
+                            "$ref": "#/definitions/responses.JWTResponse"
                         }
                     },
                     "403": {
@@ -374,7 +362,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/responses.OKResponse"
                         }
                     }
                 }
@@ -382,29 +370,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.Redirection": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "redirect_url": {
-                    "type": "string"
-                },
-                "shortcut": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "views": {
-                    "type": "integer"
-                }
-            }
-        },
         "models.RedirectionInput": {
             "type": "object",
             "required": [
@@ -416,40 +381,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "shortcut": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.SignedResponse": {
-            "type": "object",
-            "properties": {
-                "jwt_token": {
-                    "type": "string"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.User": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "updated_at": {
                     "type": "string"
                 }
             }
@@ -476,6 +407,26 @@ const docTemplate = `{
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "responses.JWTResponse": {
+            "type": "object",
+            "properties": {
+                "jwt_token": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "responses.OKResponse": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "status": {
+                    "type": "integer"
                 }
             }
         }

@@ -19,7 +19,7 @@ import (
 // @Accept						json
 // @Produce						json
 // @Param						request body models.UserInput true "query params"
-// @Success						200		{object}	models.User
+// @Success						200 	{object} 	responses.OKResponse
 // @Router						/user/register [post]
 func RegisterUser(c *gin.Context) {
 	// Input validation
@@ -62,7 +62,7 @@ func RegisterUser(c *gin.Context) {
 // @Produce						json
 // @Param						id 		path		int true "id"
 // @Param						request body models.UserInput true "query params"
-// @Success						200		{object}	models.User
+// @Success						200 	{object} 	responses.OKResponse
 // @Router						/user/edit/{id} [post]
 func EditUser(c *gin.Context) {
 	jwtToken, err := jwt.ExtractBearerToken(c.GetHeader("Authorization"))
@@ -117,7 +117,7 @@ func EditUser(c *gin.Context) {
 // @Accept						json
 // @Produce						json
 // @Param						request body models.UserLogin true "query params"
-// @Success						200		{object}	models.JWTResponse
+// @Success						200		{object}	responses.JWTResponse
 // @Failure						403
 // @Router						/user/login [post]
 func LoginUser(c *gin.Context) {
