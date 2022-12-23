@@ -1,4 +1,4 @@
-package errors
+package error_constants
 
 const NotFoundError string = "NOT FOUND"
 const ForbiddenError string = "FORBIDDEN"
