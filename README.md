@@ -28,16 +28,21 @@ For this project, the selected language is the Go for the back-end part.
 The project contains a Swagger configuration built with [swag](https://github.com/swaggo/swag)
 To get swag, you need to enter: `go install github.com/swaggo/swag/cmd/swag@latest`
 
+## Middlewares
+
+In this project, JWT Authentication is necessary to log in and then use the project.
+Moreover, there is another custom middleware used to check if the request is coming from the frontend angolar application, to prevent usages from the exterior, and then limit certain features of the project only to the frontend usage
+
 ## TODOs
 
 - First, the goal is to implement a REST API allowing to CRUD redirections.
-    - [ ] Create all project architecture
-    - [ ] Finalize all CRUD endpoints
-    - [ ] Secure API by using JWT
+    - [x] Create all project architecture
+    - [x] Finalize all CRUD endpoints
+    - [x] Secure API by using JWT
     - [ ] Enable HTTPS
     - [ ] Deploy on IIS on Windows
 - Then, we need to implement a front-end application so that when typing go/{redirection}, we will be either redirected to the good redirection, else we will be invited to create a new redirection for the entered redirection.
-    - [ ] Choose front-end framework
+    - [x] Choose front-end framework: ANGULAR
     - [ ] Login/Logout component
     - [ ] Create form and component to Add/Update redirections
     - [ ] Create Cache Map to get in cache all entries of db for faster execution
