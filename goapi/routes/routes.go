@@ -30,6 +30,7 @@ func SetupRouter() *gin.Engine {
 			redirection.POST("", jwt.JWTTokenCheck, controllers.CreateRedirection)
 			redirection.POST("/:id", jwt.JWTTokenCheck, controllers.EditRedirection)
 			redirection.PUT("/:id", controllers.IncrementRedirectionView)
+			redirection.PATCH("/:id", jwt.JWTTokenCheck, controllers.ResetRedirectionView)
 			redirection.DELETE("/:id", jwt.JWTTokenCheck, controllers.DeleteRedirection)
 		}
 
