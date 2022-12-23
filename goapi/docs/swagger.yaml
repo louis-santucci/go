@@ -108,6 +108,11 @@ paths:
       consumes:
       - application/json
       parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: id
         in: path
         name: id
@@ -128,6 +133,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/responses.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
       summary: Deletes a redirection in function of its ID
       tags:
       - redirection
@@ -152,6 +159,36 @@ paths:
           schema:
             $ref: '#/definitions/responses.ErrorResponse'
       summary: Get one redirection in function of its ID
+      tags:
+      - redirection
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authorization
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.OKResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Resets number of view for one redirection in fucntion of its ID
       tags:
       - redirection
     post:
