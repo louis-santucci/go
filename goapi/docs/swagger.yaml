@@ -26,6 +26,12 @@ definitions:
       password:
         type: string
     type: object
+  responses.ErrorResponse:
+    properties:
+      error: {}
+      status:
+        type: integer
+    type: object
   responses.JWTResponse:
     properties:
       jwt_token:
@@ -86,7 +92,12 @@ paths:
             $ref: '#/definitions/responses.OKResponse'
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
       security:
       - ApiKeyAuth: []
       summary: Creates a new redirection
@@ -111,7 +122,12 @@ paths:
             $ref: '#/definitions/responses.OKResponse'
         "404":
           description: Not Found
-          schema: {}
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
       summary: Deletes a redirection in function of its ID
       tags:
       - redirection
@@ -133,7 +149,8 @@ paths:
             $ref: '#/definitions/responses.OKResponse'
         "404":
           description: Not Found
-          schema: {}
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
       summary: Get one redirection in function of its ID
       tags:
       - redirection
@@ -166,10 +183,16 @@ paths:
             $ref: '#/definitions/responses.OKResponse'
         "400":
           description: Bad Request
-          schema: {}
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
         "404":
           description: Not Found
-          schema: {}
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
       security:
       - ApiKeyAuth: []
       summary: Updates a redirection in function of its ID
@@ -193,7 +216,8 @@ paths:
             $ref: '#/definitions/responses.OKResponse'
         "404":
           description: Not Found
-          schema: {}
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
       summary: Increments number of view for one redirection in fucntion of its ID
       tags:
       - redirection
@@ -225,6 +249,22 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.OKResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
       security:
       - ApiKeyAuth: []
       summary: Edits user in DB
@@ -248,8 +288,18 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.JWTResponse'
-        "403":
-          description: Forbidden
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
       summary: Generates JWT token by verifying user credentials
       tags:
       - user
@@ -271,6 +321,14 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/responses.OKResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/responses.ErrorResponse'
       summary: Creates new User in DB
       tags:
       - user

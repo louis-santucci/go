@@ -35,7 +35,7 @@ func GetRedirections(c *gin.Context) {
 // @Produce						json
 // @Param						id 		path		int true "id"
 // @Success						200 	{object} 	responses.OKResponse
-// @Failure						404 	{object} 	error
+// @Failure						404 	{object} 	responses.ErrorResponse
 // @Router						/redirection/{id} [get]
 func GetRedirection(c *gin.Context) {
 	var redirection models.Redirection
@@ -58,7 +58,7 @@ func GetRedirection(c *gin.Context) {
 // @Produce						json
 // @Param						id 		path		int true "id"
 // @Success						200 	{object} 	responses.OKResponse
-// @Failure						404 	{object} 	error
+// @Failure						404 	{object} 	responses.ErrorResponse
 // @Router						/redirection/{id} [put]
 func IncrementRedirectionView(c *gin.Context) {
 	var redirection models.Redirection
@@ -89,8 +89,9 @@ func IncrementRedirectionView(c *gin.Context) {
 // @Param						id 		path		int true "id"
 // @Param						request body models.RedirectionInput true "query params"
 // @Success						200 	{object} 	responses.OKResponse
-// @Failure						400 	{object} 	error
-// @Failure						404 	{object} 	error
+// @Failure						400 	{object} 	responses.ErrorResponse
+// @Failure						404 	{object} 	responses.ErrorResponse
+// @Failure						500 	{object} 	responses.ErrorResponse
 // @Router						/redirection/{id} [post]
 func EditRedirection(c *gin.Context) {
 	var redirection models.Redirection
@@ -131,7 +132,8 @@ func EditRedirection(c *gin.Context) {
 // @Produce						json
 // @Param						request body models.RedirectionInput true "query params"
 // @Success						200 	{object} 	responses.OKResponse
-// @Failure						400 	{object} 	error
+// @Failure						400 	{object} 	responses.ErrorResponse
+// @Failure						500 	{object} 	responses.ErrorResponse
 // @Router						/redirection [post]
 func CreateRedirection(c *gin.Context) {
 	// Input validation
@@ -166,7 +168,8 @@ func CreateRedirection(c *gin.Context) {
 // @Produce						json
 // @Param						id 		path		int true "id"
 // @Success						200 	{object} 	responses.OKResponse
-// @Failure						404 	{object} 	error
+// @Failure						404 	{object} 	responses.ErrorResponse
+// @Failure						500 	{object} 	responses.ErrorResponse
 // @Router						/redirection/{id} [delete]
 func DeleteRedirection(c *gin.Context) {
 	// Gets model if exists
@@ -178,7 +181,11 @@ func DeleteRedirection(c *gin.Context) {
 		return
 	}
 
-	database.DB.Delete(&redirection)
+	err = database.DB.Delete(&redirection).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
 	responseData := "Redirection #" + id + " deleted"
 	c.JSON(http.StatusOK, responses.NewOKResponse(responseData))
 }
