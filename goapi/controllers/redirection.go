@@ -54,7 +54,7 @@ func GetRedirection(c *gin.Context) {
 // PUT /redirection/:id
 
 // IncrementRedirectionView 	godoc
-// @Summary 					Increments number of view for one redirection in fucntion of its ID
+// @Summary 					Increments number of view for one redirection in function of its ID
 // @Tags						redirection
 // @Accept						json
 // @Produce						json
