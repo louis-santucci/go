@@ -6,6 +6,7 @@ import (
 	"louissantucci/goapi/errors"
 	"louissantucci/goapi/middlewares/jwt"
 	"louissantucci/goapi/models"
+	"louissantucci/goapi/responses"
 	"net/http"
 	"time"
 )
@@ -25,7 +26,7 @@ func RegisterUser(c *gin.Context) {
 	var input models.UserInput
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
 		return
 	}
 
@@ -38,16 +39,16 @@ func RegisterUser(c *gin.Context) {
 
 	err = user.HashPassword(input.Password)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
 
 	err = database.DB.Create(&user).Error
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	c.JSON(http.StatusOK, responses.NewOKResponse(user))
 }
 
 // POST /user/edit
@@ -66,12 +67,12 @@ func RegisterUser(c *gin.Context) {
 func EditUser(c *gin.Context) {
 	jwtToken, err := jwt.ExtractBearerToken(c.GetHeader("Authorization"))
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
 	email, err := jwt.GetEmailFromToken(jwtToken)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
 
@@ -79,12 +80,12 @@ func EditUser(c *gin.Context) {
 
 	err = database.DB.Where("id = ?", c.Param("id")).First(&user).Error
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": errors.NotFoundError})
+		c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, err.Error()))
 		return
 	}
 
 	if user.Email != email {
-		c.JSON(http.StatusForbidden, gin.H{"error": errors.ForbiddenError})
+		c.JSON(http.StatusForbidden, responses.NewErrorResponse(http.StatusForbidden, err.Error()))
 		return
 	}
 
@@ -92,24 +93,20 @@ func EditUser(c *gin.Context) {
 	var input models.UserInput
 	err = c.ShouldBindJSON(&input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
 		return
 	}
-	updatedUser := models.User{
-		ID:        user.ID,
-		Name:      input.Name,
-		Email:     input.Email,
-		Password:  input.Password,
-		CreatedAt: user.CreatedAt,
-		UpdatedAt: time.Now(),
-	}
-	err = database.DB.Model(&user).Updates(updatedUser).Error
+	user.Name = input.Name
+	user.Email = input.Email
+	user.Password = input.Password
+	user.UpdatedAt = time.Now()
+	err = database.DB.Model(&user).Updates(user).Error
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	c.JSON(http.StatusOK, responses.NewOKResponse(user))
 }
 
 // POST /user/login
@@ -120,7 +117,7 @@ func EditUser(c *gin.Context) {
 // @Accept						json
 // @Produce						json
 // @Param						request body models.UserLogin true "query params"
-// @Success						200		{object}	models.SignedResponse
+// @Success						200		{object}	models.JWTResponse
 // @Failure						403
 // @Router						/user/login [post]
 func LoginUser(c *gin.Context) {
@@ -129,25 +126,26 @@ func LoginUser(c *gin.Context) {
 
 	err := c.ShouldBindJSON(&loginRequest)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
 		return
 	}
 
 	// Credentials check
 	entry := database.DB.Where("email = ?", loginRequest.Email).First(&user)
 	if entry.Error != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": entry.Error.Error()})
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, entry.Error.Error()))
 		return
 	}
 	credentialsError := user.ComparePassword(loginRequest.Password)
 	if credentialsError != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": errors.UnauthorizedError + ": " + credentialsError.Error()})
+		errorData := errors.UnauthorizedError + ": " + credentialsError.Error()
+		c.JSON(http.StatusUnauthorized, responses.NewErrorResponse(http.StatusUnauthorized, errorData))
 		return
 	}
-	tokenStr, err := jwt.GenerateJWT(user.Email)
+	tokenStr, err := jwt.GenerateJWT(user.Email, user.Name)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"token": tokenStr})
+	c.JSON(http.StatusOK, responses.NewJWTResponse(http.StatusOK, tokenStr))
 }

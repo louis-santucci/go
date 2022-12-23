@@ -3,8 +3,8 @@ package controllers
 import (
 	"github.com/gin-gonic/gin"
 	"louissantucci/goapi/database"
-	"louissantucci/goapi/errors"
 	"louissantucci/goapi/models"
+	"louissantucci/goapi/responses"
 	"net/http"
 	"time"
 )
@@ -23,7 +23,7 @@ func GetRedirections(c *gin.Context) {
 
 	database.DB.Find(&redirections)
 
-	c.JSON(http.StatusOK, gin.H{"data": redirections})
+	c.JSON(http.StatusOK, responses.NewOKResponse(redirections))
 }
 
 // GET /redirection/:id
@@ -42,11 +42,11 @@ func GetRedirection(c *gin.Context) {
 
 	err := database.DB.Where("id = ?", c.Param("id")).First(&redirection).Error
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": errors.NotFoundError})
+		c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, err.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": redirection})
+	c.JSON(http.StatusOK, responses.NewOKResponse(redirection))
 }
 
 // PUT /redirection/:id
@@ -65,21 +65,21 @@ func IncrementRedirectionView(c *gin.Context) {
 
 	err := database.DB.Where("id = ?", c.Param("id")).First(&redirection).Error
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": errors.NotFoundError})
+		c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, err.Error()))
 		return
 	}
 
 	// Incrementation
-	var updatedRedirection = models.RedirectionIncrement{Views: redirection.Views + 1}
+	redirection.Views = redirection.Views + 1
 
-	database.DB.Model(&redirection).Updates(updatedRedirection)
+	database.DB.Model(&redirection).Updates(redirection)
 
-	c.JSON(http.StatusOK, gin.H{"data": updatedRedirection})
+	c.JSON(http.StatusOK, responses.NewOKResponse(redirection))
 }
 
 // POST /redirection/:id
 
-// UpdateRedirection 			godoc
+// EditRedirection 			godoc
 // @Summary						Updates a redirection in function of its ID
 // @Security ApiKeyAuth
 // @param Authorization header string true "Authorization"
@@ -88,16 +88,16 @@ func IncrementRedirectionView(c *gin.Context) {
 // @Produce						json
 // @Param						id 		path		int true "id"
 // @Param						request body models.RedirectionInput true "query params"
-// @Success						200 	{array} 	models.Redirection
+// @Success						200 	{object} 	models.Redirection
 // @Failure						400 	{object} 	error
 // @Failure						404 	{object} 	error
 // @Router						/redirection/{id} [post]
-func UpdateRedirection(c *gin.Context) {
+func EditRedirection(c *gin.Context) {
 	var redirection models.Redirection
 
 	err := database.DB.Where("id = ?", c.Param("id")).First(&redirection).Error
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": errors.NotFoundError})
+		c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, err.Error()))
 		return
 	}
 
@@ -105,24 +105,19 @@ func UpdateRedirection(c *gin.Context) {
 	var input models.RedirectionInput
 	err = c.ShouldBindJSON(&input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
 		return
 	}
-	updatedRedirection := models.Redirection{
-		ID:          redirection.ID,
-		Shortcut:    input.Shortcut,
-		RedirectUrl: input.RedirectUrl,
-		Views:       redirection.Views,
-		CreatedAt:   redirection.CreatedAt,
-		UpdatedAt:   time.Now(),
-	}
-	err = database.DB.Model(&redirection).Updates(updatedRedirection).Error
+	redirection.Shortcut = input.Shortcut
+	redirection.RedirectUrl = input.RedirectUrl
+	redirection.UpdatedAt = time.Now()
+	err = database.DB.Model(&redirection).Updates(redirection).Error
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": redirection})
+	c.JSON(http.StatusOK, responses.NewOKResponse(redirection))
 }
 
 // POST /redirection
@@ -143,7 +138,7 @@ func CreateRedirection(c *gin.Context) {
 	var input models.RedirectionInput
 	err := c.ShouldBindJSON(&input)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
 		return
 	}
 
@@ -156,10 +151,10 @@ func CreateRedirection(c *gin.Context) {
 	}
 	err = database.DB.Create(&redirection).Error
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": redirection})
+	c.JSON(http.StatusOK, responses.NewOKResponse(redirection))
 }
 
 // DELETE /redirection/:id
@@ -176,13 +171,14 @@ func CreateRedirection(c *gin.Context) {
 func DeleteRedirection(c *gin.Context) {
 	// Gets model if exists
 	var redirection models.Redirection
-	err := database.DB.Where("id = ?", c.Param("id")).First(&redirection).Error
+	id := c.Param("id")
+	err := database.DB.Where("id = ?", id).First(&redirection).Error
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"Error": errors.NotFoundError})
+		c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, err.Error()))
 		return
 	}
 
 	database.DB.Delete(&redirection)
-
-	c.JSON(http.StatusOK, gin.H{"data": true})
+	responseData := "Redirection #" + id + " deleted"
+	c.JSON(http.StatusOK, responses.NewOKResponse(responseData))
 }
