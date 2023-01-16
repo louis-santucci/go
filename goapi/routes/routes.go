@@ -15,6 +15,9 @@ import (
 func SetupRouter() *gin.Engine {
 	router := gin.Default()
 
+	// CORS Config
+	router.Use(cors.New(config.CorsConfig()))
+
 	// Swagger
 
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -48,9 +51,6 @@ func SetupRouter() *gin.Engine {
 		errorData := "Route NOT FOUND"
 		c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, errorData))
 	})
-
-	// CORS Config
-	router.Use(cors.New(config.CorsConfig()))
 
 	return router
 }
