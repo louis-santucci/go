@@ -1,0 +1,37 @@
+table {
+  width: 100%;
+}
+
+tr.redirection-detail-row {
+  height: 0;
+}
+
+tr.redirection-row:not(.redirection-expanded-row):hover {
+  background: whitesmoke;
+}
+
+tr.redirection-row:not(.redirection-expanded-row):active {
+  background: #efefef;
+}
+
+.redirection-row td {
+  border-bottom-width: 0;
+}
+
+.redirection-element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+.redirection-description {
+  padding: 16px;
+}
+
+.redirection-description-attribution {
+  opacity: 0.5;
+}
+
+.mat-mdc-form-field {
+  font-size: 14px;
+  width: 100%;
+}
