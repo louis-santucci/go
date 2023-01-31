@@ -142,7 +142,7 @@ const docTemplate = `{
                 "tags": [
                     "redirection"
                 ],
-                "summary": "Increments number of view for one redirection in fucntion of its ID",
+                "summary": "Increments number of view for one redirection in function of its ID",
                 "parameters": [
                     {
                         "type": "integer",
@@ -412,6 +412,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/info": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Returns User information with Auth header",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authorization",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/responses.OKResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/responses.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/user/login": {
             "post": {
                 "consumes": [
@@ -562,11 +604,14 @@ const docTemplate = `{
         "responses.JWTResponse": {
             "type": "object",
             "properties": {
-                "jwt_token": {
+                "email": {
                     "type": "string"
                 },
                 "status": {
                     "type": "integer"
+                },
+                "token": {
+                    "type": "string"
                 }
             }
         },

@@ -10,20 +10,20 @@ import (
 func JWTTokenCheck(c *gin.Context) {
 	jwtToken, err := ExtractBearerToken(c.GetHeader("Authorization"))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadGateway, err.Error()))
+		c.AbortWithStatusJSON(http.StatusUnauthorized, responses.NewErrorResponse(http.StatusUnauthorized, err.Error()))
 		return
 	}
 
 	token, err := ParseToken(jwtToken)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
+		c.AbortWithStatusJSON(http.StatusUnauthorized, responses.NewErrorResponse(http.StatusUnauthorized, err.Error()))
 		return
 	}
 
 	_, OK := token.Claims.(jwt.MapClaims)
 	if !OK {
 		errorData := "Cannot parse MapClaims"
-		c.AbortWithStatusJSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, errorData))
+		c.AbortWithStatusJSON(http.StatusUnauthorized, responses.NewErrorResponse(http.StatusUnauthorized, errorData))
 		return
 	}
 

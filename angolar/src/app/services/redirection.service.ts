@@ -25,7 +25,7 @@ export class RedirectionService {
   private redirectionMapObservable: Observable<Map<string, Redirection> | undefined> = this.redirectionMapSource.asObservable();
 
   constructor(private http: HttpClient, private propertiesService: PropertiesService, private logger: LoggerService) {
-    this.backendUrl = this.propertiesService.getConfig()?.backendUrl;
+    this.backendUrl = this.propertiesService.backendUrl;
     this.redirectionUrl = this.backendUrl + '/api/redirection';
   }
 

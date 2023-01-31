@@ -13,6 +13,8 @@ import (
 
 var jwtKey = []byte(config.Jwt_secret)
 
+const EXPIRATION_TIME = 1 * time.Hour
+
 type Claim struct {
 	Email string `json:"email"`
 	Name  string `json:"name"`
@@ -24,7 +26,7 @@ func GetSecretKey() string {
 }
 
 func GenerateJWT(email string, name string) (tokenString string, err error) {
-	expirationTime := time.Now().Add(1 * time.Hour)
+	expirationTime := time.Now().Add(EXPIRATION_TIME)
 	claims := &Claim{
 		Email: email,
 		Name:  name,

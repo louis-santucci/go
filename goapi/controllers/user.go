@@ -53,6 +53,50 @@ func RegisterUser(c *gin.Context) {
 	c.JSON(http.StatusOK, responses.NewOKResponse(user))
 }
 
+// GET /user/info
+
+// GetUserInfo		 				godoc
+// @Summary						Returns User information with Auth header
+// @Security ApiKeyAuth
+// @param Authorization header string true "Authorization"
+// @Tags						user
+// @Accept						json
+// @Produce						json
+// @Success						200 	{object} 	responses.OKResponse
+// @Failure						500 	{object} 	responses.ErrorResponse
+// @Router						/user/info [get]
+func GetUserInfo(c *gin.Context) {
+	authHeader := c.GetHeader("Authorization")
+	jwtToken, err := jwt.ExtractBearerToken(authHeader)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
+	email, err := jwt.GetEmailFromToken(jwtToken)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
+
+	var user models.User
+
+	err = database.DB.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
+
+	// User creation
+	userInfo := models.UserInfo{
+		Name:      user.Name,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+	}
+
+	c.JSON(http.StatusOK, responses.NewOKResponse(userInfo))
+}
+
 // POST /user/edit
 
 // EditUser		 				godoc
@@ -145,5 +189,5 @@ func LoginUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
-	c.JSON(http.StatusOK, responses.NewJWTResponse(http.StatusOK, tokenStr))
+	c.JSON(http.StatusOK, responses.NewJWTResponse(http.StatusOK, tokenStr, user.Email))
 }

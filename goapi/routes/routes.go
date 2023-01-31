@@ -41,6 +41,7 @@ func SetupRouter() *gin.Engine {
 		{
 			user.POST("/login", controllers.LoginUser)
 			user.POST("/register", controllers.RegisterUser)
+			user.GET("/info", jwt.JWTTokenCheck, controllers.GetUserInfo)
 			user.POST("/edit/:id", jwt.JWTTokenCheck, controllers.EditUser)
 		}
 	}

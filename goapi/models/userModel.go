@@ -25,6 +25,13 @@ type UserLogin struct {
 	Password string `json:"password"`
 }
 
+type UserInfo struct {
+	Name      string    `json:"name"`
+	Email     string    `json:"email"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 func (user *User) HashPassword(password string) error {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	if err != nil {

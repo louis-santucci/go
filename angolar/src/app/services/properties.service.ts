@@ -1,28 +1,22 @@
-import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
-import {Config} from "../models/config";
+import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PropertiesService {
 
-  private config?: Config;
-  private loaded = false;
+  private _backendUrl: string = "http://localhost:9090";
+  private _angolarSecretKey: string = 'lkMzojzKlshozdgZeidjbfbrShgdisgFHHzysiztDsyzhghejfvrjgvbchxgsywgfquzysoedirfyruoYghshxUvsh';
 
-  constructor(private http: HttpClient) {
+  constructor() { }
+
+
+  get backendUrl(): string {
+    return this._backendUrl;
   }
 
-  public loadConfig(): Promise<void> {
-    return this.http.get<Config>('/assets/properties.json')
-      .toPromise()
-      .then(data => {
-        this.config = data;
-        this.loaded = true;
-      })
-  }
 
-  public getConfig(): Config | undefined {
-    return this.config;
+  get angolarSecretKey(): string {
+    return this._angolarSecretKey;
   }
 }
