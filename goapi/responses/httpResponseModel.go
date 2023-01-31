@@ -14,7 +14,8 @@ type ErrorResponse struct {
 
 type JWTResponse struct {
 	Status int    `json:"status"`
-	Token  string `json:"jwt_token"`
+	Token  string `json:"token"`
+	Email  string `json:"email"`
 }
 
 func NewErrorResponse(status int, error interface{}) ErrorResponse {
@@ -31,9 +32,10 @@ func NewOKResponse(data interface{}) OKResponse {
 	}
 }
 
-func NewJWTResponse(status int, token string) JWTResponse {
+func NewJWTResponse(status int, token string, email string) JWTResponse {
 	return JWTResponse{
 		Status: status,
 		Token:  token,
+		Email:  email,
 	}
 }

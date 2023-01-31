@@ -1,0 +1,29 @@
+<div>
+  <p>
+    <mat-form-field appearance="fill">
+      <mat-label>Email</mat-label>
+      <input matInput placeholder="test@example.com" [formControl]="email" required>
+    </mat-form-field>
+  </p>
+  <p>
+    <mat-form-field appearance="fill">
+      <mat-label>Name</mat-label>
+      <input matInput placeholder="Jean Dupont" [formControl]="name" required>
+    </mat-form-field>
+  </p>
+  <p>
+    <mat-form-field appearance="fill">
+      <mat-label>Password</mat-label>
+      <input matInput [type]="hide ? 'password' : 'text'" [formControl]="password" required>
+      <button mat-icon-button matSuffix (click)="hide = !hide">
+        <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
+      </button>
+    </mat-form-field>
+  </p>
+
+  <button mat-raised-button [disabled]="password.invalid || email.invalid || name.invalid" (click)="createUser()">Create User</button>
+
+  <div *ngIf="isSuccessful === false && errorMessage !== ''">
+    ERROR: {{this.errorMessage}}
+  </div>
+</div>

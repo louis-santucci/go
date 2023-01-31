@@ -1,0 +1,21 @@
+<mat-toolbar>
+  <span>My App</span>
+  <span class="spacer"></span>
+  <div *ngIf="!isLoggedIn">
+    <button mat-icon-button (click)="login()" class="example-icon favorite-icon">
+      Login
+    </button>
+    <span class="spacer"></span>
+    <button mat-icon-button (click)="register()" class="example-icon favorite-icon">
+      Register
+    </button>
+  </div>
+  <span *ngIf="isLoggedIn">
+    <span>
+      {{this.loggedInEmail}}
+    </span>
+    <button mat-icon-button (click)="logout()" class="example-icon favorite-icon">
+      Logout
+    </button>
+  </span>
+</mat-toolbar>
