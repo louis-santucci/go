@@ -5,7 +5,7 @@ import {AppRoutingModule} from './app-routing.module';
 import {AppComponent} from './app.component';
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {LoginComponent} from './components/login/login.component';
-import {HomeComponent} from './home/home.component';
+import {HomeComponent} from './components/home/home.component';
 import {HashLocationStrategy, LocationStrategy} from "@angular/common";
 import {ToastrModule} from "ngx-toastr";
 import {RedirectionTableComponent} from './components/redirection-table/redirection-table.component';
@@ -20,7 +20,13 @@ import {AuthInterceptor} from "./interceptors/auth.interceptor";
 import {RegisterComponent} from './components/register/register.component';
 import {ReactiveFormsModule} from "@angular/forms";
 import {MatToolbarModule} from "@angular/material/toolbar";
-import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+import {NavBarComponent} from './components/nav-bar/nav-bar.component';
+import {RedirectionCreationComponent} from './components/redirection-creation/redirection-creation.component';
+import {RedirectionEditionComponent} from './components/redirection-edition/redirection-edition.component';
+import {UserInfoComponent} from './components/user-info/user-info.component';
+import {AlertComponent} from './components/alert/alert.component';
+import {AuthGuard} from "./guards/auth.guard";
+import {AlertService} from "./services/alert.service";
 
 @NgModule({
   declarations: [
@@ -30,6 +36,10 @@ import { NavBarComponent } from './components/nav-bar/nav-bar.component';
     RedirectionTableComponent,
     RegisterComponent,
     NavBarComponent,
+    RedirectionCreationComponent,
+    RedirectionEditionComponent,
+    UserInfoComponent,
+    AlertComponent,
   ],
   imports: [
     BrowserModule,
@@ -47,6 +57,8 @@ import { NavBarComponent } from './components/nav-bar/nav-bar.component';
     MatToolbarModule,
   ],
   providers: [
+    AuthGuard,
+    AlertService,
     {provide: LocationStrategy, useClass: HashLocationStrategy},
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true}
   ],
