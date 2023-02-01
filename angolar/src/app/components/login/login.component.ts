@@ -54,11 +54,14 @@ export class LoginComponent implements OnInit {
         .subscribe({
           next: data => {
             this.storageService.saveUser(data.token, data.email);
-            this.router.navigate([this.returnUrl]);
+            this.router.navigate([this.returnUrl])
+              .then(() => {
+                window.location.reload();
+              });
           },
           error: err => {
             this.isSuccessful = false;
-            this.alertService.error(err.error.error);
+            this.alertService.error('ERROR: ' + err.error.error);
           },
           complete: () => this.logger.info('LoginUser() DONE')
         });
