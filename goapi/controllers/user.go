@@ -175,12 +175,12 @@ func LoginUser(c *gin.Context) {
 	// Credentials check
 	entry := database.DB.Where("email = ?", loginRequest.Email).First(&user)
 	if entry.Error != nil {
-		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, entry.Error.Error()))
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, "Email not found"))
 		return
 	}
 	credentialsError := user.ComparePassword(loginRequest.Password)
 	if credentialsError != nil {
-		errorData := error_constants.UnauthorizedError + ": " + credentialsError.Error()
+		errorData := error_constants.UnauthorizedError + ": Invalid Password"
 		c.JSON(http.StatusUnauthorized, responses.NewErrorResponse(http.StatusUnauthorized, errorData))
 		return
 	}
