@@ -1,20 +1,25 @@
 <mat-toolbar>
-  <span>My App</span>
+  <div (click)="goToHomepage()">Go App</div>
   <span class="spacer"></span>
   <div *ngIf="!isLoggedIn">
-    <button mat-icon-button (click)="login()" class="example-icon favorite-icon">
+    <button mat-fab extended color="primary" (click)="login()">
+      <mat-icon>login</mat-icon>
       Login
     </button>
     <span class="spacer"></span>
-    <button mat-icon-button (click)="register()" class="example-icon favorite-icon">
+    <button mat-fab extended color="primary" (click)="register()" class="example-icon favorite-icon">
+      <mat-icon>person_add</mat-icon>
       Register
     </button>
   </div>
   <span *ngIf="isLoggedIn">
-    <span>
+    <button mat-fab color="primary" extended (click)="getUserInfo()">
+      <mat-icon>account_circle</mat-icon>
       {{this.loggedInEmail}}
-    </span>
-    <button mat-icon-button (click)="logout()" class="example-icon favorite-icon">
+    </button>
+    <span class="spacer"></span>
+    <button mat-fab extended color="primary" (click)="logout()" class="example-icon favorite-icon">
+      <mat-icon>logout</mat-icon>
       Logout
     </button>
   </span>
