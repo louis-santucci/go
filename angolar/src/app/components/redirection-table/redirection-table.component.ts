@@ -7,6 +7,7 @@ import {RedirectionService} from "../../services/redirection.service";
 import {MatSort} from "@angular/material/sort";
 import {LoggerService} from "../../services/logger.service";
 import {DateUtils} from "../../utils/date-utils";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-redirection-table',
@@ -29,7 +30,9 @@ export class RedirectionTableComponent implements OnInit, OnDestroy {
 
   redirectionMapSubscription?: Subscription;
 
-  public constructor(private redirectionService: RedirectionService, private logger: LoggerService) {
+  public constructor(private redirectionService: RedirectionService,
+                     private logger: LoggerService,
+                     private router: Router) {
   }
 
   public applyFilter(event: Event) {
@@ -58,5 +61,12 @@ export class RedirectionTableComponent implements OnInit, OnDestroy {
   public deleteRedirection(id: number): void {
     this.logger.log("Deleting redirection #" + id);
     this.redirectionService.deleteRedirection(id);
+  }
+
+  public editRedirection(id: number): void {
+    this.logger.log("Editing redirection #" + id);
+    const url = '/redirection/edit/' + id;
+    this.router.navigateByUrl(url)
+      .then(window.location.reload);
   }
 }

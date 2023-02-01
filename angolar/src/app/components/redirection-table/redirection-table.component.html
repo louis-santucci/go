@@ -44,7 +44,7 @@
           <div>Created at: {{getCleanDate(element.created_at)}}</div>
           <div>Updated at: {{getCleanDate(element.updated_at)}}</div>
           <span>
-            <button mat-stroked-button color="primary">Edit</button>
+            <button (click)="editRedirection(element.id)" mat-stroked-button color="primary">Edit</button>
             <button (click)="deleteRedirection(element.id)" mat-stroked-button type="button" color="warn">Delete</button>
           </span>
         </div>
