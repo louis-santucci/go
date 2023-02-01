@@ -60,7 +60,7 @@ export class RegisterComponent implements OnInit {
 
   private goToLoginPage(email: string): void {
     this.router.navigateByUrl("/login").then(() => {
-      this.logger.toast(ToastLevel.SUCCESS, 'New user ' + email + 'created', 'Register User SUCCESS');
+      this.logger.toast(ToastLevel.SUCCESS, 'New user ' + email + ' created', 'Register User SUCCESS');
     })
   }
 }
