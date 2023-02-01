@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
 import { Observable } from 'rxjs';
 import {StorageService} from "../services/storage.service";
+import {AlertService} from "../services/alert.service";
 
 @Injectable({
   providedIn: 'root'
@@ -9,7 +10,8 @@ import {StorageService} from "../services/storage.service";
 export class AuthGuard implements CanActivate {
 
   constructor(private router: Router,
-              private storageService: StorageService) {
+              private storageService: StorageService,
+              private alertService: AlertService) {
   }
 
   canActivate(
@@ -21,6 +23,7 @@ export class AuthGuard implements CanActivate {
     }
 
     // Not logged so redirect to login page
+    this.alertService.error('ERROR: You need to be logged in to access this page.', true);
     this.router.navigate(['/login'], {
       queryParams: { returnUrl: state.url }
     });

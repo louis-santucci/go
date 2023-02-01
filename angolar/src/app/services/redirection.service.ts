@@ -7,6 +7,7 @@ import {PropertiesService} from "./properties.service";
 import {LoggerService} from "./logger.service";
 import {ToastLevel} from "../models/toast-level";
 import {RedirectionInput} from "../dtos/redirection/redirection.input";
+import {AlertService} from "./alert.service";
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +25,10 @@ export class RedirectionService {
   private redirectionObservable: Observable<Redirection | undefined> = this.redirectionSource.asObservable();
   private redirectionMapObservable: Observable<Map<string, Redirection> | undefined> = this.redirectionMapSource.asObservable();
 
-  constructor(private http: HttpClient, private propertiesService: PropertiesService, private logger: LoggerService) {
+  constructor(private http: HttpClient,
+              private propertiesService: PropertiesService,
+              private logger: LoggerService,
+              private alertService: AlertService) {
     this.backendUrl = this.propertiesService.backendUrl;
     this.redirectionUrl = this.backendUrl + '/api/redirection';
   }
@@ -186,12 +190,14 @@ export class RedirectionService {
                 const newRedirection = res.data;
                 currentMap.set(newRedirection.shortcut, newRedirection);
                 this.redirectionMapSource.next(currentMap);
+                this.alertService.success('New Redirection for URL ' + newRedirection.redirect_url + ' created', true);
               }
             }
           },
           error: error => {
             this.logger.error(error);
-            this.logger.toast(ToastLevel.ERROR, error, 'createRedirection() ERROR')
+            this.logger.toast(ToastLevel.ERROR, error, 'createRedirection() ERROR');
+            this.alertService.error('ERROR: ' + error.error.error);
           },
           complete: () => this.logger.info('createRedirection() DONE')
         });

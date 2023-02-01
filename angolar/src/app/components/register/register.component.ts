@@ -51,7 +51,7 @@ export class RegisterComponent implements OnInit {
             this.goToLoginPage(data.data.email);
           },
           error: err => {
-            this.alertService.error(err.error.error);
+            this.alertService.error('ERROR: ' + err.error.error);
           },
           complete: () => this.logger.info('RegisterUser() DONE')
         });
