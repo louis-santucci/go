@@ -1,7 +1,8 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {RedirectionService} from "../services/redirection.service";
-import {Redirection} from "../models/redirection";
+import {RedirectionService} from "../../services/redirection.service";
+import {Redirection} from "../../models/redirection";
 import {Subscription} from "rxjs";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-home',
@@ -14,7 +15,8 @@ export class HomeComponent implements OnInit, OnDestroy{
 
   private redirectionListSubscription?: Subscription;
 
-  public constructor(private redirectionService: RedirectionService) {
+  public constructor(private redirectionService: RedirectionService,
+                     private router: Router) {
   }
 
   public ngOnInit() {
@@ -25,5 +27,9 @@ export class HomeComponent implements OnInit, OnDestroy{
 
   public ngOnDestroy() {
     this.redirectionListSubscription?.unsubscribe();
+  }
+
+  public createRedirection() {
+    this.router.navigateByUrl("/redirection/new");
   }
 }
