@@ -8,6 +8,7 @@ import {LoggerService} from "./logger.service";
 import {ToastLevel} from "../models/toast-level";
 import {RedirectionInput} from "../dtos/redirection/redirection.input";
 import {AlertService} from "./alert.service";
+import {MapUtils} from "../utils/map-utils";
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +38,7 @@ export class RedirectionService {
     return this.redirectionObservable;
   }
 
-  public getRedirectionMapObservable():Observable<Map<string, Redirection> | undefined> {
+  public getRedirectionMapObservable(): Observable<Map<string, Redirection> | undefined> {
     return this.redirectionMapObservable;
   }
 
@@ -80,7 +81,7 @@ export class RedirectionService {
           },
           error: error => {
             this.logger.error(error);
-            this.logger.toast(ToastLevel.ERROR, error, 'getRedirection(' + id + ') ERROR');
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'getRedirection(' + id + ') ERROR');
           },
           complete: () => this.logger.info('getRedirection(' + id + ') DONE')
         })
@@ -155,9 +156,10 @@ export class RedirectionService {
           next: res => {
             this.logger.log({status: res.status, data: res.data});
             if (res.status === 200) {
-              const currentMap = this.redirectionMapSource.getValue();
+              let currentMap = this.redirectionMapSource.getValue();
               if (currentMap !== undefined) {
                 const newRedirection = res.data;
+                currentMap = MapUtils.deleteById(currentMap, id);
                 currentMap.set(newRedirection.shortcut, newRedirection);
                 this.redirectionMapSource.next(currentMap);
               }
