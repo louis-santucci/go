@@ -8,6 +8,9 @@ import {MatSort} from "@angular/material/sort";
 import {LoggerService} from "../../services/logger.service";
 import {DateUtils} from "../../utils/date-utils";
 import {Router} from "@angular/router";
+import {UserService} from "../../services/user.service";
+import {UserInfo} from "../../models/user-info";
+import {ToastLevel} from "../../models/toast-level";
 
 @Component({
   selector: 'app-redirection-table',
@@ -24,15 +27,17 @@ import {Router} from "@angular/router";
 export class RedirectionTableComponent implements OnInit, OnDestroy {
   dataSource = new MatTableDataSource<Redirection>();
   @ViewChild(MatSort, {static: true}) sort: MatSort | null = null;
-  displayColumns = ['shortcut', 'redirect_url', 'views', 'created_at'];
+  displayColumns = ['shortcut', 'redirect_url', 'views', 'created_at', 'created_by', 'edit', 'delete'];
   displayColumnsExpanded = [...this.displayColumns, 'expand'];
   expandedRedirection?: Redirection;
 
   redirectionMapSubscription?: Subscription;
+  userMap: Map<number, UserInfo> = new Map();
 
   public constructor(private redirectionService: RedirectionService,
                      private logger: LoggerService,
-                     private router: Router) {
+                     private router: Router,
+                     private userService: UserService) {
   }
 
   public applyFilter(event: Event) {
@@ -48,6 +53,22 @@ export class RedirectionTableComponent implements OnInit, OnDestroy {
           this.dataSource.sort = this.sort;
         }
       });
+    this.userService.getUserList().subscribe({
+      next: res => {
+        this.logger.log({status: res.status, data: res.data});
+        if (res.status === 200) {
+          const userList = res.data;
+          userList.forEach(user => {
+            this.userMap.set(user.id, user);
+          })
+        }
+      },
+      error: error => {
+        this.logger.error(error.message);
+        this.logger.toast(ToastLevel.ERROR, error.error.error, 'getUserList() ERROR');
+      },
+      complete: () => this.logger.info('getUserList() DONE')
+    })
   }
 
   public getCleanDate(date: string): string {
