@@ -64,7 +64,7 @@ func GetEmailFromToken(jwtToken string) (string, error) {
 
 func ExtractBearerToken(header string) (string, error) {
 	if header == "" {
-		return "", errors.New("no header given")
+		return "", errors.New("You need to be logged in to perform this action.")
 	}
 
 	jwtToken := strings.Split(header, " ")
