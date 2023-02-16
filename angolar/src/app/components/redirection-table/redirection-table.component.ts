@@ -11,6 +11,8 @@ import {Router} from "@angular/router";
 import {UserService} from "../../services/user.service";
 import {UserInfo} from "../../models/user-info";
 import {ToastLevel} from "../../models/toast-level";
+import {StorageService} from "../../services/storage.service";
+import {TooltipUtils} from "../../utils/tooltip-utils";
 
 @Component({
   selector: 'app-redirection-table',
@@ -33,11 +35,13 @@ export class RedirectionTableComponent implements OnInit, OnDestroy {
 
   redirectionMapSubscription?: Subscription;
   userMap: Map<number, UserInfo> = new Map();
+  userInfo?: UserInfo;
 
   public constructor(private redirectionService: RedirectionService,
                      private logger: LoggerService,
                      private router: Router,
-                     private userService: UserService) {
+                     private userService: UserService,
+                     private storageService: StorageService) {
   }
 
   public applyFilter(event: Event) {
@@ -68,6 +72,18 @@ export class RedirectionTableComponent implements OnInit, OnDestroy {
         this.logger.toast(ToastLevel.ERROR, error.error.error, 'getUserList() ERROR');
       },
       complete: () => this.logger.info('getUserList() DONE')
+    });
+    this.userService.getUserInfo().subscribe({
+      next: res => {
+        this.logger.log({status: res.status, data: res.data});
+        if (res.status === 200) {
+          this.userInfo = res.data;
+        }
+      },
+      error: () => {
+        this.logger.info('User not connected');
+      },
+      complete: () => this.logger.info('getUserInfo() DONE')
     })
   }
 
@@ -97,5 +113,23 @@ export class RedirectionTableComponent implements OnInit, OnDestroy {
       return user.email;
     }
     return 'Deleted User';
+  }
+
+  public isUserLoggedIn(): boolean {
+    return this.storageService.isLoggedIn();
+  }
+
+  public displayTooltip(id: number, message: string): string {
+    if (!this.isUserLoggedIn() || this.userInfo === undefined) {
+      return TooltipUtils.LOGIN_ERROR;
+    }
+    if (this.userInfo.id !== id) {
+      return TooltipUtils.OWNERSHIP_ERROR;
+    }
+    return message;
+  }
+
+  public get tooltipUtils() {
+    return TooltipUtils;
   }
 }

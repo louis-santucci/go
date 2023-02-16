@@ -27,6 +27,7 @@ import {UserInfoComponent} from './components/user-info/user-info.component';
 import {AlertComponent} from './components/alert/alert.component';
 import {AuthGuard} from "./guards/auth.guard";
 import {AlertService} from "./services/alert.service";
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [
@@ -55,6 +56,7 @@ import {AlertService} from "./services/alert.service";
     MatSortModule,
     ReactiveFormsModule,
     MatToolbarModule,
+    MatTooltipModule,
   ],
   providers: [
     AuthGuard,

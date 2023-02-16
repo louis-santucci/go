@@ -1,6 +1,6 @@
 <mat-form-field>
   <mat-label>Filter</mat-label>
-  <input matInput (keyup)="applyFilter($event)" placeholder="ex: Facebook" #input>
+  <input matInput type="search" (keyup)="applyFilter($event)" placeholder="ex: Facebook" #input>
 </mat-form-field>
 
 <table mat-table matSort
@@ -29,17 +29,21 @@
   <ng-container matColumnDef="edit">
     <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
     <td mat-cell *matCellDef="let element">
-      <button mat-icon-button (click)="editRedirection(element.id)" color="primary">
-        <mat-icon>edit</mat-icon>
-      </button>
+      <span [matTooltip]="this.displayTooltip(element.creator_id, tooltipUtils.EDIT_REDIRECTION)" matTooltipPosition="above">
+        <button mat-icon-button [disabled]="!this.isUserLoggedIn() || this.userInfo?.id !== element.id" (click)="editRedirection(element.id)" color="primary">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </span>
     </td>
   </ng-container>
   <ng-container matColumnDef="delete">
     <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
     <td mat-cell *matCellDef="let element">
-      <button mat-icon-button (click)="deleteRedirection(element.id)" type="button" color="warn">
-        <mat-icon>delete</mat-icon>
-      </button>
+      <span [matTooltip]="this.displayTooltip(element.creator_id, tooltipUtils.DELETE_REDIRECTION)" matTooltipPosition="above">
+        <button mat-icon-button [disabled]="!this.isUserLoggedIn() || this.userInfo?.id !== element.id" (click)="deleteRedirection(element.id)" type="button" color="warn">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </span>
     </td>
   </ng-container>
   <ng-container matColumnDef="expand">
@@ -65,14 +69,18 @@
           <div>Created at: {{getCleanDate(element.created_at)}}</div>
           <div>Updated at: {{getCleanDate(element.updated_at)}}</div>
           <span>
-            <button mat-fab extended (click)="editRedirection(element.id)" color="primary">
-              <mat-icon>edit</mat-icon>
-              Edit
-            </button>
-            <button mat-fab extended (click)="deleteRedirection(element.id)" type="button" color="warn">
-              <mat-icon>delete</mat-icon>
-              Delete
-            </button>
+            <span [matTooltip]="this.displayTooltip(element.creator_id, tooltipUtils.EDIT_REDIRECTION)" matTooltipPosition="above">
+              <button mat-fab extended [disabled]="!this.isUserLoggedIn() || this.userInfo?.id !== element.id" (click)="editRedirection(element.id)" color="primary">
+                <mat-icon>edit</mat-icon>
+                Edit
+              </button>
+            </span>
+            <span [matTooltip]="this.displayTooltip(element.creator_id, tooltipUtils.DELETE_REDIRECTION)" matTooltipPosition="above">
+              <button mat-fab extended [disabled]="!this.isUserLoggedIn() || this.userInfo?.id !== element.id" (click)="deleteRedirection(element.id)" type="button" color="warn">
+                <mat-icon>delete</mat-icon>
+                Delete
+              </button>
+            </span>
           </span>
         </div>
       </div>
