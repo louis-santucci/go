@@ -5,4 +5,5 @@ export interface Redirection {
   views: number;
   created_at: string;
   updated_at: string;
+  creator_id: number;
 }
