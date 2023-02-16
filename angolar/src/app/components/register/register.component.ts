@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {UserService} from "../../services/user.service";
-import {FormBuilder, FormControl, Validators} from "@angular/forms";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {LoggerService} from "../../services/logger.service";
 import {ToastLevel} from "../../models/toast-level";
 import {Router} from "@angular/router";
@@ -13,14 +13,15 @@ import {AlertService} from "../../services/alert.service";
 })
 export class RegisterComponent implements OnInit {
 
-  public email = new FormControl('', [Validators.required, Validators.email]);
-  public password = new FormControl('', [Validators.required, Validators.minLength(8)]);
-  public name = new FormControl('', [Validators.required]);
+  public registerFormGroup = new FormGroup({
+    email: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl('', [Validators.required, Validators.minLength(8)]),
+    name: new FormControl('', [Validators.required])
+  });
 
   public hide = true;
 
   constructor(private userService: UserService,
-              private formBuilder: FormBuilder,
               private logger: LoggerService,
               private alertService: AlertService,
               private router: Router) {
@@ -31,20 +32,20 @@ export class RegisterComponent implements OnInit {
 
   createUser() {
     let hasErrors = false;
-    if (this.email.value === null || this.email.value === '') {
+    if (this.registerFormGroup.value.email === null || this.registerFormGroup.value.email === '') {
       this.logger.toast(ToastLevel.WARN, "Email cannot be empty", "Register User Error");
       hasErrors = true;
     }
-    if (this.name.value === null || this.name.value === '') {
+    if (this.registerFormGroup.value.name === null || this.registerFormGroup.value.name === '') {
       this.logger.toast(ToastLevel.WARN, "Name cannot be empty", "Register User Error");
       hasErrors = true;
     }
-    if (this.password.value === null || this.password.value === '') {
+    if (this.registerFormGroup.value.password === null || this.registerFormGroup.value.password === '') {
       this.logger.toast(ToastLevel.WARN, "Password cannot be empty", "Register User Error");
       hasErrors = true;
     }
     if (!hasErrors) {
-      this.userService.register(<string>this.email.value, <string>this.name.value, <string>this.password.value)
+      this.userService.register(<string>this.registerFormGroup.value.email, <string>this.registerFormGroup.value.name, <string>this.registerFormGroup.value.password)
         .subscribe({
           next: data => {
             this.alertService.success('Registration successful', true);

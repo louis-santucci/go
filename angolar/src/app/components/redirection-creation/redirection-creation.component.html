@@ -1,15 +1,17 @@
-<div>
-  <p>
-    <mat-form-field appearance="fill">
-      <mat-label>Shortcut</mat-label>
-      <input matInput placeholder="f" [formControl]="shortcut" required>
-    </mat-form-field>
-  </p>
-  <p>
-    <mat-form-field appearance="fill">
-      <mat-label>RedirectUrl</mat-label>
-      <input matInput placeholder="facebook.com" [formControl]="redirectUrl" required>
-    </mat-form-field>
-  </p>
-  <button mat-raised-button [disabled]="shortcut.invalid || redirectUrl.invalid" (click)="createRedirection()">Create Redirection</button>
-</div>
+<form [formGroup]="redirectionEditionFormGroup" (ngSubmit)="createRedirection()">
+  <div>
+    <p>
+      <mat-form-field appearance="fill">
+        <mat-label>Shortcut</mat-label>
+        <input matInput placeholder="f" formControlName="shortcut" required>
+      </mat-form-field>
+    </p>
+    <p>
+      <mat-form-field appearance="fill">
+        <mat-label>RedirectUrl</mat-label>
+        <input matInput placeholder="facebook.com" formControlName="redirectUrl" required>
+      </mat-form-field>
+    </p>
+    <button mat-raised-button [disabled]="this.redirectionEditionFormGroup.invalid" type="submit">Create Redirection</button>
+  </div>
+</form>
