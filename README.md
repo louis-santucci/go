@@ -43,6 +43,6 @@ Moreover, there is another custom middleware used to check if the request is com
     - [ ] Deploy on IIS on Windows
 - Then, we need to implement a front-end application so that when typing go/{redirection}, we will be either redirected to the good redirection, else we will be invited to create a new redirection for the entered redirection.
     - [x] Choose front-end framework: ANGULAR
-    - [ ] Login/Logout component
-    - [ ] Create form and component to Add/Update redirections
+    - [x] Login/Logout component
+    - [x] Create form and component to Add/Update redirections
     - [ ] Create Cache Map to get in cache all entries of db for faster execution
