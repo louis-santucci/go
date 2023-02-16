@@ -1,1 +1,23 @@
-<p>user-info works!</p>
+<div>
+  Name: {{this.connectedUser?.name}}
+</div>
+<div>
+  Email: {{this.connectedUser?.email}}
+</div>
+<div>
+  Created at: {{getCleanDate(this.connectedUser?.created_at)}}
+</div>
+<div>
+  Last updated at: {{getCleanDate(this.connectedUser?.updated_at)}}
+</div>
+<div>
+  <button mat-fab extended color="primary" (click)="openEdition()">
+    <mat-icon>edit</mat-icon>
+    Edit information
+  </button>
+  <span class="spacer"></span>
+  <button mat-fab extended color="warn" (click)="deleteUser()">
+    <mat-icon>delete</mat-icon>
+    Delete user
+  </button>
+</div>
