@@ -43,6 +43,7 @@ export class NavBarComponent implements OnInit, OnDestroy {
 
   logout(): void {
     this.storageService.clean();
+    this.router.navigateByUrl('/');
     window.location.reload();
   }
 
