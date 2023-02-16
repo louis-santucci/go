@@ -88,6 +88,7 @@ func GetUserInfo(c *gin.Context) {
 
 	// User creation
 	userInfo := models.UserInfo{
+		ID:        user.ID,
 		Name:      user.Name,
 		Email:     user.Email,
 		CreatedAt: user.CreatedAt,
@@ -190,4 +191,31 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, responses.NewJWTResponse(http.StatusOK, tokenStr, user.Email))
+}
+
+// GetUsers			godoc
+// @Summary 					Get all users
+// @Tags						user
+// @Accept						json
+// @Produce						json
+// @Success						200 	{object} 	responses.OKResponse
+// @Router						/user/list [get]
+func GetUsers(c *gin.Context) {
+	var users []models.User
+
+	database.DB.Find(&users)
+	userInfos := make([]models.UserInfo, len(users))
+	for i := 0; i < len(users); i++ {
+		// User creation
+		userInfo := models.UserInfo{
+			ID:        users[i].ID,
+			Name:      users[i].Name,
+			Email:     users[i].Email,
+			CreatedAt: users[i].CreatedAt,
+			UpdatedAt: users[i].UpdatedAt,
+		}
+		userInfos[i] = userInfo
+	}
+
+	c.JSON(http.StatusOK, responses.NewOKResponse(userInfos))
 }
