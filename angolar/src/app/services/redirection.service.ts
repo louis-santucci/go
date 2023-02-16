@@ -7,6 +7,8 @@ import {PropertiesService} from "./properties.service";
 import {LoggerService} from "./logger.service";
 import {ToastLevel} from "../models/toast-level";
 import {RedirectionInput} from "../dtos/redirection/redirection.input";
+import {AlertService} from "./alert.service";
+import {MapUtils} from "../utils/map-utils";
 
 @Injectable({
   providedIn: 'root'
@@ -24,7 +26,10 @@ export class RedirectionService {
   private redirectionObservable: Observable<Redirection | undefined> = this.redirectionSource.asObservable();
   private redirectionMapObservable: Observable<Map<string, Redirection> | undefined> = this.redirectionMapSource.asObservable();
 
-  constructor(private http: HttpClient, private propertiesService: PropertiesService, private logger: LoggerService) {
+  constructor(private http: HttpClient,
+              private propertiesService: PropertiesService,
+              private logger: LoggerService,
+              private alertService: AlertService) {
     this.backendUrl = this.propertiesService.backendUrl;
     this.redirectionUrl = this.backendUrl + '/api/redirection';
   }
@@ -33,7 +38,7 @@ export class RedirectionService {
     return this.redirectionObservable;
   }
 
-  public getRedirectionMapObservable():Observable<Map<string, Redirection> | undefined> {
+  public getRedirectionMapObservable(): Observable<Map<string, Redirection> | undefined> {
     return this.redirectionMapObservable;
   }
 
@@ -54,7 +59,7 @@ export class RedirectionService {
           },
           error: error => {
             this.logger.error(error.message);
-            this.logger.toast(ToastLevel.ERROR, error.message, 'getRedirections() ERROR');
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'getRedirections() ERROR');
           },
           complete: () => this.logger.info('getRedirections() DONE')
         })
@@ -76,7 +81,7 @@ export class RedirectionService {
           },
           error: error => {
             this.logger.error(error);
-            this.logger.toast(ToastLevel.ERROR, error, 'getRedirection(' + id + ') ERROR');
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'getRedirection(' + id + ') ERROR');
           },
           complete: () => this.logger.info('getRedirection(' + id + ') DONE')
         })
@@ -103,7 +108,7 @@ export class RedirectionService {
           },
           error: error => {
             this.logger.error(error);
-            this.logger.toast(ToastLevel.ERROR, error, 'incrementRedirectionView(' + id + ') ERROR');
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'incrementRedirectionView(' + id + ') ERROR');
           },
           complete: () => this.logger.info('incrementRedirectionView(' + id + ') DONE')
         })
@@ -128,9 +133,9 @@ export class RedirectionService {
               }
             }
           },
-          error: err => {
-            this.logger.error(err);
-            this.logger.toast(ToastLevel.ERROR, err, 'resetRedirectionView(' + id + ') ERROR');
+          error: error => {
+            this.logger.error(error);
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'resetRedirectionView(' + id + ') ERROR');
           },
           complete: () => this.logger.info('resetRedirectionView(' + id + ')' + 'DONE')
         })
@@ -151,9 +156,10 @@ export class RedirectionService {
           next: res => {
             this.logger.log({status: res.status, data: res.data});
             if (res.status === 200) {
-              const currentMap = this.redirectionMapSource.getValue();
+              let currentMap = this.redirectionMapSource.getValue();
               if (currentMap !== undefined) {
                 const newRedirection = res.data;
+                currentMap = MapUtils.deleteById(currentMap, id);
                 currentMap.set(newRedirection.shortcut, newRedirection);
                 this.redirectionMapSource.next(currentMap);
               }
@@ -161,7 +167,7 @@ export class RedirectionService {
           },
           error: error => {
             this.logger.error(error);
-            this.logger.toast(ToastLevel.ERROR, error, 'editRedirection(' + id + ') ERROR')
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'editRedirection(' + id + ') ERROR')
           },
           complete: () => this.logger.info('editRedirection() DONE')
         })
@@ -186,12 +192,14 @@ export class RedirectionService {
                 const newRedirection = res.data;
                 currentMap.set(newRedirection.shortcut, newRedirection);
                 this.redirectionMapSource.next(currentMap);
+                this.alertService.success('New Redirection for URL ' + newRedirection.redirect_url + ' created', false);
               }
             }
           },
           error: error => {
             this.logger.error(error);
-            this.logger.toast(ToastLevel.ERROR, error, 'createRedirection() ERROR')
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'createRedirection() ERROR');
+            this.alertService.error('ERROR: ' + error.error.error);
           },
           complete: () => this.logger.info('createRedirection() DONE')
         });
@@ -221,12 +229,14 @@ export class RedirectionService {
                   currentMap.delete(deletedShortcut);
                 }
                 this.redirectionMapSource.next(currentMap);
+                this.alertService.success('Redirection #' + id + ' deleted', false);
+                this.logger.toast(ToastLevel.SUCCESS, 'Redirection #' + id + ' deleted', 'Delete Redirection SUCCESS');
               }
             }
           },
           error: error => {
             this.logger.error(error);
-            this.logger.toast(ToastLevel.ERROR, error, 'deleteRedirection(' + id + ') ERROR')
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'deleteRedirection(' + id + ') ERROR')
           },
           complete: () => this.logger.info('createRedirection() DONE')
         })

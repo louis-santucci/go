@@ -1,0 +1,18 @@
+<div *ngIf="this.id === undefined || this.redirection === undefined">
+  Redirection not found
+</div>
+<div *ngIf="this.redirection !== undefined && this.id !== undefined">
+  <p>
+    <mat-form-field appearance="fill">
+      <mat-label>Shortcut</mat-label>
+      <input matInput placeholder="f" [formControl]="shortcut" required>
+    </mat-form-field>
+  </p>
+  <p>
+    <mat-form-field appearance="fill">
+      <mat-label>RedirectUrl</mat-label>
+      <input matInput placeholder="facebook.com" [formControl]="redirectUrl" required>
+    </mat-form-field>
+  </p>
+  <button mat-raised-button [disabled]="shortcut.invalid || redirectUrl.invalid" (click)="editRedirection()">Edit Redirection</button>
+</div>

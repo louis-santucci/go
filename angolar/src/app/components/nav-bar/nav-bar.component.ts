@@ -46,4 +46,11 @@ export class NavBarComponent implements OnInit, OnDestroy {
     window.location.reload();
   }
 
+  getUserInfo(): void {
+    this.router.navigateByUrl('/user/info');
+  }
+
+  goToHomepage(): void {
+    this.router.navigate(['/']);
+  }
 }

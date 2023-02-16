@@ -14,10 +14,5 @@
       </button>
     </mat-form-field>
   </p>
-
   <button mat-raised-button [disabled]="password.invalid || email.invalid" (click)="login()">Login</button>
-
-  <div *ngIf="isSuccessful === false && errorMessage !== ''">
-    ERROR: {{this.errorMessage}}
-  </div>
 </div>

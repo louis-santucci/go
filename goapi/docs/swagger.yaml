@@ -335,6 +335,20 @@ paths:
       summary: Returns User information with Auth header
       tags:
       - user
+  /user/list:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/responses.OKResponse'
+      summary: Get all users
+      tags:
+      - user
   /user/login:
     post:
       consumes:

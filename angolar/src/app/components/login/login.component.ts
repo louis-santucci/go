@@ -4,7 +4,8 @@ import {StorageService} from "../../services/storage.service";
 import {LoggerService} from "../../services/logger.service";
 import {UserService} from "../../services/user.service";
 import {ToastLevel} from "../../models/toast-level";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
+import {AlertService} from "../../services/alert.service";
 
 @Component({
   selector: 'app-login',
@@ -20,20 +21,22 @@ export class LoginComponent implements OnInit {
 
   public isLoggedIn = false;
   public isSuccessful = false;
-  public errorMessage = '';
-  public loggedToken?: string;
+  private returnUrl?: string;
 
-  constructor(private storageService: StorageService,
+  constructor(private route: ActivatedRoute,
+              private storageService: StorageService,
               private logger: LoggerService,
               private userService: UserService,
+              private alertService: AlertService,
               private router: Router) {
   }
 
   ngOnInit(): void {
     if (this.storageService.isLoggedIn()) {
       this.isLoggedIn = true;
-      this.loggedToken = this.storageService.getUserToken();
+      this.router.navigate(['/']);
     }
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
   login(): void {
@@ -51,18 +54,17 @@ export class LoginComponent implements OnInit {
         .subscribe({
           next: data => {
             this.storageService.saveUser(data.token, data.email);
-            this.goToHomepage();
+            this.router.navigate([this.returnUrl])
+              .then(() => {
+                window.location.reload();
+              });
           },
           error: err => {
-            this.errorMessage = err.error.message;
             this.isSuccessful = false;
+            this.alertService.error('ERROR: ' + err.error.error);
           },
           complete: () => this.logger.info('LoginUser() DONE')
         });
     }
-  }
-
-  private goToHomepage(): void {
-    this.router.navigateByUrl("/")
   }
 }

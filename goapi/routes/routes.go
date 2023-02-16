@@ -39,6 +39,7 @@ func SetupRouter() *gin.Engine {
 
 		user := api.Group("/user")
 		{
+			user.GET("/list", controllers.GetUsers)
 			user.POST("/login", controllers.LoginUser)
 			user.POST("/register", controllers.RegisterUser)
 			user.GET("/info", jwt.JWTTokenCheck, controllers.GetUserInfo)

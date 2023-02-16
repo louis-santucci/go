@@ -4,6 +4,7 @@ import {FormBuilder, FormControl, Validators} from "@angular/forms";
 import {LoggerService} from "../../services/logger.service";
 import {ToastLevel} from "../../models/toast-level";
 import {Router} from "@angular/router";
+import {AlertService} from "../../services/alert.service";
 
 @Component({
   selector: 'app-register',
@@ -18,12 +19,10 @@ export class RegisterComponent implements OnInit {
 
   public hide = true;
 
-  public isSuccessful = false;
-  public errorMessage = '';
-
   constructor(private userService: UserService,
               private formBuilder: FormBuilder,
               private logger: LoggerService,
+              private alertService: AlertService,
               private router: Router) {
   }
 
@@ -48,13 +47,11 @@ export class RegisterComponent implements OnInit {
       this.userService.register(<string>this.email.value, <string>this.name.value, <string>this.password.value)
         .subscribe({
           next: data => {
-            this.isSuccessful = true;
-            this.errorMessage = '';
+            this.alertService.success('Registration successful', true);
             this.goToLoginPage(data.data.email);
           },
           error: err => {
-            this.errorMessage = err.error.error;
-            this.isSuccessful = false;
+            this.alertService.error('ERROR: ' + err.error.error);
           },
           complete: () => this.logger.info('RegisterUser() DONE')
         });
@@ -63,7 +60,7 @@ export class RegisterComponent implements OnInit {
 
   private goToLoginPage(email: string): void {
     this.router.navigateByUrl("/login").then(() => {
-      this.logger.toast(ToastLevel.SUCCESS, 'New user ' + email + 'created', 'Register User SUCCESS');
+      this.logger.toast(ToastLevel.SUCCESS, 'New user ' + email + ' created', 'Register User SUCCESS');
     })
   }
 }
