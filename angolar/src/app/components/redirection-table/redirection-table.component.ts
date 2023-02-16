@@ -90,4 +90,12 @@ export class RedirectionTableComponent implements OnInit, OnDestroy {
     this.router.navigateByUrl(url)
       .then(window.location.reload);
   }
+
+  public displayCreatorEmail(id: number): string {
+    const user = this.userMap.get(id);
+    if (user !== undefined) {
+      return user.email;
+    }
+    return 'Deleted User';
+  }
 }
