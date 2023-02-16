@@ -59,7 +59,7 @@ export class RedirectionService {
           },
           error: error => {
             this.logger.error(error.message);
-            this.logger.toast(ToastLevel.ERROR, error.message, 'getRedirections() ERROR');
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'getRedirections() ERROR');
           },
           complete: () => this.logger.info('getRedirections() DONE')
         })
@@ -108,7 +108,7 @@ export class RedirectionService {
           },
           error: error => {
             this.logger.error(error);
-            this.logger.toast(ToastLevel.ERROR, error, 'incrementRedirectionView(' + id + ') ERROR');
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'incrementRedirectionView(' + id + ') ERROR');
           },
           complete: () => this.logger.info('incrementRedirectionView(' + id + ') DONE')
         })
@@ -133,9 +133,9 @@ export class RedirectionService {
               }
             }
           },
-          error: err => {
-            this.logger.error(err);
-            this.logger.toast(ToastLevel.ERROR, err, 'resetRedirectionView(' + id + ') ERROR');
+          error: error => {
+            this.logger.error(error);
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'resetRedirectionView(' + id + ') ERROR');
           },
           complete: () => this.logger.info('resetRedirectionView(' + id + ')' + 'DONE')
         })
@@ -167,7 +167,7 @@ export class RedirectionService {
           },
           error: error => {
             this.logger.error(error);
-            this.logger.toast(ToastLevel.ERROR, error, 'editRedirection(' + id + ') ERROR')
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'editRedirection(' + id + ') ERROR')
           },
           complete: () => this.logger.info('editRedirection() DONE')
         })
@@ -192,13 +192,13 @@ export class RedirectionService {
                 const newRedirection = res.data;
                 currentMap.set(newRedirection.shortcut, newRedirection);
                 this.redirectionMapSource.next(currentMap);
-                this.alertService.success('New Redirection for URL ' + newRedirection.redirect_url + ' created', true);
+                this.alertService.success('New Redirection for URL ' + newRedirection.redirect_url + ' created', false);
               }
             }
           },
           error: error => {
             this.logger.error(error);
-            this.logger.toast(ToastLevel.ERROR, error, 'createRedirection() ERROR');
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'createRedirection() ERROR');
             this.alertService.error('ERROR: ' + error.error.error);
           },
           complete: () => this.logger.info('createRedirection() DONE')
@@ -229,12 +229,14 @@ export class RedirectionService {
                   currentMap.delete(deletedShortcut);
                 }
                 this.redirectionMapSource.next(currentMap);
+                this.alertService.success('Redirection #' + id + ' deleted', false);
+                this.logger.toast(ToastLevel.SUCCESS, 'Redirection #' + id + ' deleted', 'Delete Redirection SUCCESS');
               }
             }
           },
           error: error => {
             this.logger.error(error);
-            this.logger.toast(ToastLevel.ERROR, error, 'deleteRedirection(' + id + ') ERROR')
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'deleteRedirection(' + id + ') ERROR')
           },
           complete: () => this.logger.info('createRedirection() DONE')
         })
