@@ -4,6 +4,7 @@ import {StorageService} from "./services/storage.service";
 import {UserService} from "./services/user.service";
 import {EventBusService} from "./services/event-bus.service";
 import {LoggerService} from "./services/logger.service";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-root',
@@ -15,7 +16,11 @@ export class AppComponent implements OnInit {
 
   eventBusSub?: Subscription;
 
-  constructor(private eventBusService: EventBusService, private logger: LoggerService, private userService: UserService, private storageService: StorageService) {
+  constructor(private eventBusService: EventBusService,
+              private logger: LoggerService,
+              private userService: UserService,
+              private storageService: StorageService,
+              private router: Router) {
   }
 
   ngOnInit(): void {
@@ -26,7 +31,7 @@ export class AppComponent implements OnInit {
 
   logout(): void {
     this.storageService.clean();
-
+    this.router.navigateByUrl('/');
     window.location.reload();
   }
 
