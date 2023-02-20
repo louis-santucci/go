@@ -28,6 +28,9 @@ import {AlertComponent} from './components/alert/alert.component';
 import {AuthGuard} from "./guards/auth.guard";
 import {AlertService} from "./services/alert.service";
 import {MatTooltipModule} from "@angular/material/tooltip";
+import {ErrorNotFoundComponent} from './components/errors/error-not-found.component';
+import {MatCardModule} from "@angular/material/card";
+import {ErrorUnauthorizedComponent} from './components/errors/error-unauthorized.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +44,8 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     RedirectionEditionComponent,
     UserInfoComponent,
     AlertComponent,
+    ErrorNotFoundComponent,
+    ErrorUnauthorizedComponent,
   ],
   imports: [
     BrowserModule,
@@ -57,6 +62,7 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     ReactiveFormsModule,
     MatToolbarModule,
     MatTooltipModule,
+    MatCardModule,
   ],
   providers: [
     AuthGuard,

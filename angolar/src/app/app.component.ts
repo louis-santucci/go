@@ -5,6 +5,7 @@ import {UserService} from "./services/user.service";
 import {EventBusService} from "./services/event-bus.service";
 import {LoggerService} from "./services/logger.service";
 import {Router} from "@angular/router";
+import {RoutingUtils} from "./utils/routing-utils";
 
 @Component({
   selector: 'app-root',
@@ -31,7 +32,7 @@ export class AppComponent implements OnInit {
 
   logout(): void {
     this.storageService.clean();
-    this.router.navigateByUrl('/');
+    RoutingUtils.goToHomepage(this.router);
     window.location.reload();
   }
 
