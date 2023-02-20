@@ -6,6 +6,7 @@ import {UserService} from "../../services/user.service";
 import {ToastLevel} from "../../models/toast-level";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AlertService} from "../../services/alert.service";
+import {RoutingUtils} from "../../utils/routing-utils";
 
 @Component({
   selector: 'app-login',
@@ -35,7 +36,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     if (this.storageService.isLoggedIn()) {
       this.isLoggedIn = true;
-      this.router.navigate(['/']);
+      RoutingUtils.goToHomepage(this.router);
     }
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }

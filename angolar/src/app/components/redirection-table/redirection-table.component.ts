@@ -32,6 +32,7 @@ export class RedirectionTableComponent implements OnInit, OnDestroy {
   displayColumns = ['shortcut', 'redirect_url', 'views', 'created_at', 'created_by', 'edit', 'delete'];
   displayColumnsExpanded = [...this.displayColumns, 'expand'];
   expandedRedirection?: Redirection;
+  isSearchBarHidden = true;
 
   redirectionMapSubscription?: Subscription;
   userMap: Map<number, UserInfo> = new Map();
@@ -131,5 +132,12 @@ export class RedirectionTableComponent implements OnInit, OnDestroy {
 
   public get tooltipUtils() {
     return TooltipUtils;
+  }
+
+  public displaySearchBar(): void {
+    this.isSearchBarHidden = !this.isSearchBarHidden;
+    if (this.isSearchBarHidden) {
+      this.dataSource.filter = '';
+    }
   }
 }

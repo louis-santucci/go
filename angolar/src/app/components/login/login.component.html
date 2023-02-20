@@ -1,4 +1,4 @@
-<form [formGroup]="this.loginFormGroup" (ngSubmit)="login()">
+<form [formGroup]="this.loginFormGroup" (ngSubmit)="login()" class="center-text spacer-vertical">
   <div>
     <p>
       <mat-form-field appearance="fill">
@@ -12,7 +12,10 @@
         <input matInput type="password" formControlName="password" required>
       </mat-form-field>
     </p>
-    <button mat-raised-button [disabled]="this.loginFormGroup.invalid" type="submit">Login</button>
+    <button mat-fab extended color="primary" [disabled]="this.loginFormGroup.invalid" type="submit">
+      <mat-icon>login</mat-icon>
+      Login
+    </button>
   </div>
 
 </form>

@@ -1,6 +1,13 @@
 <mat-toolbar>
-  <div (click)="goToHomepage()">Go App</div>
+  <div>Go App</div>
   <span class="spacer"></span>
+  <div *ngIf="!isOnHomepage()">
+    <button mat-fab extended color="primary" (click)="goToHomepage()">
+      <mat-icon>arrow_back</mat-icon>
+      Back
+    </button>
+    <span class="spacer"></span>
+  </div>
   <div *ngIf="!isLoggedIn">
     <button mat-fab extended color="primary" (click)="login()">
       <mat-icon>login</mat-icon>

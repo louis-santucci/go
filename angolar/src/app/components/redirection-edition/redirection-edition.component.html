@@ -2,7 +2,7 @@
   Redirection not found
 </div>
 <div *ngIf="this.redirection !== undefined && this.id !== undefined">
-  <form [formGroup]="redirectionEditionFormGroup" (ngSubmit)="editRedirection()">
+  <form [formGroup]="redirectionEditionFormGroup" (ngSubmit)="editRedirection()" class="center-text spacer-vertical">
     <p>
       <mat-form-field appearance="fill">
         <mat-label>Shortcut</mat-label>
@@ -15,6 +15,9 @@
         <input matInput placeholder="facebook.com" formControlName="redirectUrl" required>
       </mat-form-field>
     </p>
-    <button mat-raised-button [disabled]="this.redirectionEditionFormGroup.invalid" type="submit">Edit Redirection</button>
+    <button mat-fab extended color="primary" [disabled]="this.redirectionEditionFormGroup.invalid" type="submit">
+      <mat-icon>edit</mat-icon>
+      Edit redirection
+    </button>
   </form>
 </div>

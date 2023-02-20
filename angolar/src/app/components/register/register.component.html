@@ -1,4 +1,4 @@
-<form [formGroup]="registerFormGroup" (ngSubmit)="createUser()">
+<form [formGroup]="registerFormGroup" (ngSubmit)="createUser()" class="center-text spacer-vertical">
   <div>
     <p>
       <mat-form-field appearance="fill">
@@ -18,6 +18,9 @@
         <input matInput type="password" formControlName="password" required>
       </mat-form-field>
     </p>
-    <button mat-raised-button [disabled]="this.registerFormGroup.invalid" type="submit">Create User</button>
+    <button mat-fab extended color="primary" type="submit" [disabled]="this.registerFormGroup.invalid">
+      <mat-icon>person_add</mat-icon>
+      Register
+    </button>
   </div>
 </form>

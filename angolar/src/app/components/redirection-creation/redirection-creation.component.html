@@ -1,4 +1,4 @@
-<form [formGroup]="redirectionEditionFormGroup" (ngSubmit)="createRedirection()">
+<form [formGroup]="redirectionEditionFormGroup" (ngSubmit)="createRedirection()" class="center-text spacer-vertical">
   <div>
     <p>
       <mat-form-field appearance="fill">
@@ -12,6 +12,9 @@
         <input matInput placeholder="facebook.com" formControlName="redirectUrl" required>
       </mat-form-field>
     </p>
-    <button mat-raised-button [disabled]="this.redirectionEditionFormGroup.invalid" type="submit">Create Redirection</button>
+    <button mat-fab extended color="primary" [disabled]="this.redirectionEditionFormGroup.invalid" type="submit">
+      <mat-icon>add</mat-icon>
+      Create redirection
+    </button>
   </div>
 </form>

@@ -5,6 +5,7 @@ import {LoggerService} from "../../services/logger.service";
 import {ToastLevel} from "../../models/toast-level";
 import {Router} from "@angular/router";
 import {RegexUtils} from "../../utils/regex-utils";
+import {RoutingUtils} from "../../utils/routing-utils";
 
 @Component({
   selector: 'app-redirection-creation',
@@ -42,7 +43,7 @@ export class RedirectionCreationComponent implements OnInit {
       this.redirectionService.createRedirection(
         <string>this.redirectionEditionFormGroup.value.shortcut,
         <string>this.redirectionEditionFormGroup.value.redirectUrl);
-      this.router.navigateByUrl('/');
+      RoutingUtils.goToHomepage(this.router);
     }
   }
 }

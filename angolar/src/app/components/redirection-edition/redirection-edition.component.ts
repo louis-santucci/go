@@ -7,6 +7,9 @@ import {ToastLevel} from "../../models/toast-level";
 import {Subscription} from "rxjs";
 import {Redirection} from "../../models/redirection";
 import {RegexUtils} from "../../utils/regex-utils";
+import {RoutingUtils} from "../../utils/routing-utils";
+import {UserService} from "../../services/user.service";
+import {AlertService} from "../../services/alert.service";
 
 @Component({
   selector: 'app-redirection-edition',
@@ -28,25 +31,51 @@ export class RedirectionEditionComponent implements OnInit, OnDestroy {
   public constructor(private logger: LoggerService,
                      private redirectionService: RedirectionService,
                      private router: Router,
-                     private route: ActivatedRoute) {
+                     private route: ActivatedRoute,
+                     private userService: UserService,
+                     private alertService: AlertService) {
   }
 
   ngOnInit(): void {
     this.routeSubscription = this.route.params.subscribe(params => {
       this.id = params['id'];
-      this.redirectionSubscription = this.redirectionService.getRedirectionObservable().subscribe(redirection => {
-        this.redirection = redirection;
-        this.redirectionEditionFormGroup.setValue({
-          shortcut: <string>this.redirection?.shortcut,
-          redirectUrl: <string>this.redirection?.redirect_url
-        })
+      this.redirectionService.getRedirection(this.id).subscribe({
+        next: res => {
+          this.logger.log({status: res.status, data: res.data});
+          if (res.status === 200) {
+            this.redirection = res.data;
+            this.userService.getUserInfo().subscribe({
+              next: userRes => {
+                this.logger.log({status: userRes.status, data: userRes.data});
+                if (userRes.status === 200) {
+                  const userInfo = userRes.data;
+                  if (userInfo.id !== this.redirection?.creator_id) {
+                    this.alertService.error('You are not the owner of this redirection. You can\'t edit it.', true);
+                    RoutingUtils.goToUnauthorizedPage(this.router);
+                  }
+                }
+              },
+              error: error => {
+                this.logger.error(error);
+                this.logger.toast(ToastLevel.ERROR, error.error.error, 'getRedirection(' + this.id + ') ERROR');
+              }
+            });
+            this.redirectionEditionFormGroup.setValue({
+              shortcut: <string>this.redirection?.shortcut,
+              redirectUrl: <string>this.redirection?.redirect_url
+            })
+          }
+        },
+        error: error => {
+          this.logger.error(error);
+          this.logger.toast(ToastLevel.ERROR, error.error.error, 'getRedirection(' + this.id + ') ERROR');
+          if (error.status === 404) {
+            RoutingUtils.goToNotFoundPage(this.router);
+          }
+        },
+        complete: () => this.logger.info('getRedirection(' + this.id + ') DONE')
       });
-      this.redirectionService.getRedirection(this.id);
     })
-  }
-
-  private static isNumber(id: any) {
-    return typeof(id) === 'number';
   }
 
   ngOnDestroy() {
@@ -67,7 +96,7 @@ export class RedirectionEditionComponent implements OnInit, OnDestroy {
     if (!hasErrors) {
       if (this.redirection) {
         this.redirectionService.editRedirection(this.redirection?.id, <string>this.redirectionEditionFormGroup.value.shortcut, <string>this.redirectionEditionFormGroup.value.redirectUrl);
-        this.router.navigateByUrl('/');
+        RoutingUtils.goToHomepage(this.router);
       }
     }
   }
