@@ -5,6 +5,14 @@
   padding-right: 15px;
 }
 
+.spacer-vertical {
+  padding-top: 10px;
+}
+
+.center-text {
+  text-align: center;
+}
+
 
 /* based on angular-toastr css https://github.com/Foxandxss/angular-toastr/blob/cb508fe6801d6b288d3afc525bb40fee1b101650/dist/angular-toastr.css */
 
