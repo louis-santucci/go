@@ -19,11 +19,9 @@ export class RedirectionService {
   private readonly redirectionUrl: string;
 
   // Observable source
-  private redirectionSource = new BehaviorSubject<Redirection | undefined>(undefined);
   private redirectionMapSource = new BehaviorSubject<Map<string, Redirection> | undefined>(undefined)
 
   // Observable source
-  private redirectionObservable: Observable<Redirection | undefined> = this.redirectionSource.asObservable();
   private redirectionMapObservable: Observable<Map<string, Redirection> | undefined> = this.redirectionMapSource.asObservable();
 
   constructor(private http: HttpClient,
@@ -32,10 +30,6 @@ export class RedirectionService {
               private alertService: AlertService) {
     this.backendUrl = this.propertiesService.backendUrl;
     this.redirectionUrl = this.backendUrl + '/api/redirection';
-  }
-
-  public getRedirectionObservable(): Observable<Redirection | undefined> {
-    return this.redirectionObservable;
   }
 
   public getRedirectionMapObservable(): Observable<Map<string, Redirection> | undefined> {
@@ -68,80 +62,9 @@ export class RedirectionService {
     }
   }
 
-  public getRedirection(id: number): void {
-    try {
-      const url = this.redirectionUrl + '/' + id;
-      this.http.get<OkResponse<Redirection>>(url)
-        .subscribe({
-          next: res => {
-            this.logger.log({status: res.status, data: res.data});
-            if (res.status === 200) {
-              this.redirectionSource.next(res.data);
-            }
-          },
-          error: error => {
-            this.logger.error(error);
-            this.logger.toast(ToastLevel.ERROR, error.error.error, 'getRedirection(' + id + ') ERROR');
-          },
-          complete: () => this.logger.info('getRedirection(' + id + ') DONE')
-        })
-    } catch (error) {
-      this.logger.error(error);
-    }
-  }
-
-  public incrementRedirectionView(id: number): void {
-    try {
-      const url = this.redirectionUrl + '/' + id;
-      this.http.put<OkResponse<Redirection>>(url, null)
-        .subscribe({
-          next: res => {
-            this.logger.log({status: res.status, data: res.data});
-            if (res.status === 200) {
-              const currentMap = this.redirectionMapSource.getValue();
-              if (currentMap !== undefined) {
-                const newRedirection = res.data;
-                currentMap.set(newRedirection.shortcut, newRedirection);
-                this.redirectionMapSource.next(currentMap);
-              }
-            }
-          },
-          error: error => {
-            this.logger.error(error);
-            this.logger.toast(ToastLevel.ERROR, error.error.error, 'incrementRedirectionView(' + id + ') ERROR');
-          },
-          complete: () => this.logger.info('incrementRedirectionView(' + id + ') DONE')
-        })
-    } catch (error) {
-      this.logger.error(error);
-    }
-  }
-
-  public resetRedirectionView(id: number): void {
-    try {
-      const url = this.redirectionUrl + '/' + id;
-      this.http.patch<OkResponse<Redirection>>(url, null)
-        .subscribe({
-          next: res => {
-            this.logger.log({status: res.status, data: res.data});
-            if (res.status === 200) {
-              const currentMap = this.redirectionMapSource.getValue();
-              if (currentMap !== undefined) {
-                const newRedirection = res.data;
-                currentMap.set(newRedirection.shortcut, newRedirection);
-                this.redirectionMapSource.next(currentMap);
-              }
-            }
-          },
-          error: error => {
-            this.logger.error(error);
-            this.logger.toast(ToastLevel.ERROR, error.error.error, 'resetRedirectionView(' + id + ') ERROR');
-          },
-          complete: () => this.logger.info('resetRedirectionView(' + id + ')' + 'DONE')
-        })
-    } catch (error) {
-      this.logger.error(error);
-    }
+  public getRedirection(id: number): Observable<OkResponse<Redirection>> {
+    const url = this.redirectionUrl + '/' + id;
+    return this.http.get<OkResponse<Redirection>>(url);
   }
 
   public editRedirection(id: number, shortcut: string, redirectUrl: string): void {
