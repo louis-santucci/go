@@ -4,6 +4,7 @@ import {StorageService} from "../../services/storage.service";
 import {UserService} from "../../services/user.service";
 import {EventBusService} from "../../services/event-bus.service";
 import {Router} from "@angular/router";
+import {RoutingUtils} from "../../utils/routing-utils";
 
 @Component({
   selector: 'app-nav-bar',
@@ -43,8 +44,12 @@ export class NavBarComponent implements OnInit, OnDestroy {
 
   logout(): void {
     this.storageService.clean();
-    this.router.navigateByUrl('/');
+    RoutingUtils.goToHomepage(this.router);
     window.location.reload();
+  }
+
+  isOnHomepage(): boolean {
+    return this.router.url == '/';
   }
 
   getUserInfo(): void {
@@ -52,6 +57,6 @@ export class NavBarComponent implements OnInit, OnDestroy {
   }
 
   goToHomepage(): void {
-    this.router.navigate(['/']);
+    RoutingUtils.goToHomepage(this.router);
   }
 }

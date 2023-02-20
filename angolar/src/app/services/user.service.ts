@@ -47,4 +47,8 @@ export class UserService {
   getUserList(): Observable<OkResponse<UserInfo[]>> {
     return this.http.get<OkResponse<UserInfo[]>>(this.userUrl + '/list', httpOptions);
   }
+
+  getUserInfo(): Observable<OkResponse<UserInfo>> {
+    return this.http.get<OkResponse<UserInfo>>(this.userUrl + '/info', httpOptions);
+  }
 }

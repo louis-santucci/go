@@ -1,11 +1,12 @@
 import {Component, OnInit} from '@angular/core';
-import {FormControl, Validators} from "@angular/forms";
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 import {StorageService} from "../../services/storage.service";
 import {LoggerService} from "../../services/logger.service";
 import {UserService} from "../../services/user.service";
 import {ToastLevel} from "../../models/toast-level";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AlertService} from "../../services/alert.service";
+import {RoutingUtils} from "../../utils/routing-utils";
 
 @Component({
   selector: 'app-login',
@@ -14,10 +15,11 @@ import {AlertService} from "../../services/alert.service";
 })
 export class LoginComponent implements OnInit {
 
-  public email = new FormControl('', [Validators.email, Validators.required]);
-  public password = new FormControl('', [Validators.required]);
+  public loginFormGroup = new FormGroup({
+    email: new FormControl('', [Validators.email, Validators.required]),
+    password: new FormControl('', [Validators.required])
+  })
 
-  public hide = true;
 
   public isLoggedIn = false;
   public isSuccessful = false;
@@ -34,23 +36,23 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     if (this.storageService.isLoggedIn()) {
       this.isLoggedIn = true;
-      this.router.navigate(['/']);
+      RoutingUtils.goToHomepage(this.router);
     }
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
   }
 
   login(): void {
     let hasErrors = false;
-    if (this.email.value === null || this.email.value === '') {
+    if (this.loginFormGroup.value.email === null || this.loginFormGroup.value.email === '') {
       this.logger.toast(ToastLevel.WARN, "Email cannot be empty", "Register User Error");
       hasErrors = true;
     }
-    if (this.password.value === null || this.password.value === '') {
+    if (this.loginFormGroup.value.password === null || this.loginFormGroup.value.password === '') {
       this.logger.toast(ToastLevel.WARN, "Password cannot be empty", "Register User Error");
       hasErrors = true;
     }
     if (!hasErrors) {
-      this.userService.login(<string>this.email.value, <string>this.password.value)
+      this.userService.login(<string>this.loginFormGroup.value.email, <string>this.loginFormGroup.value.password)
         .subscribe({
           next: data => {
             this.storageService.saveUser(data.token, data.email);
