@@ -73,7 +73,14 @@
           <div>Created by: {{this.userMap.get(element.creator_id)?.email}}</div>
           <div>Created at: {{getCleanDate(element.created_at)}}</div>
           <div>Updated at: {{getCleanDate(element.updated_at)}}</div>
+
           <span>
+            <span>
+              <button mat-fab extended (click)="redirect(element.redirect_url, element.id)" color="primary">
+                <mat-icon>arrow_forward</mat-icon>
+                Go
+              </button>
+            </span>
             <span [matTooltip]="this.displayTooltip(element.creator_id, tooltipUtils.EDIT_REDIRECTION)" matTooltipPosition="above">
               <button mat-fab extended [disabled]="!this.isUserLoggedIn() || this.userInfo?.id !== element.creator_id" (click)="editRedirection(element.id)" color="primary">
                 <mat-icon>edit</mat-icon>

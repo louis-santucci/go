@@ -140,4 +140,16 @@ export class RedirectionTableComponent implements OnInit, OnDestroy {
       this.dataSource.filter = '';
     }
   }
+
+  public redirect(url: string, id: number): void {
+    this.redirectionService.incrementRedirectionView(id).subscribe({
+      next: res => {
+        this.logger.log({status: res.status, data: res.data});
+        window.location.href = url;
+      },
+      error: error => {
+        this.logger.error(error)
+      }
+    });
+  }
 }
