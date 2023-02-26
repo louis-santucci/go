@@ -112,9 +112,11 @@ func ResetRedirectionView(c *gin.Context) {
 	}
 
 	// Reset
-	redirection.Views = 0
-
-	err = database.DB.Model(&redirection).Updates(redirection).Error
+	var updateRedirection map[string]interface{}
+	updateRedirection = map[string]interface{}{
+		"Views": 0,
+	}
+	err = database.DB.Model(&redirection).Where("id = ?", redirection.ID).Updates(&updateRedirection).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
