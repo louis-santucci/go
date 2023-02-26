@@ -100,4 +100,24 @@ export class RedirectionEditionComponent implements OnInit, OnDestroy {
       }
     }
   }
+
+  public resetRedirectionViews(): void {
+    if (this.redirection !== undefined) {
+      this.redirectionService.resetRedirectionView(this.redirection?.id)
+        .subscribe({
+          next: res => {
+            this.logger.log({status: res.status, data: res.data});
+            if (this.redirection !== undefined) {
+              this.redirection.views = 0;
+            }
+          },
+          error: error => {
+            this.logger.error(error);
+            this.logger.toast(ToastLevel.ERROR, error.error.error, 'getRedirection(' + this.id + ') ERROR');
+            this.alertService.error(error.error.error, false);
+          },
+          complete: () => this.logger.info('resetRedirectionViews(' + this.redirection?.id + ') DONE')
+        });
+    }
+  }
 }
