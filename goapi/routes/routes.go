@@ -8,6 +8,7 @@ import (
 	"louissantucci/goapi/config"
 	"louissantucci/goapi/controllers"
 	"louissantucci/goapi/middlewares/jwt"
+	"louissantucci/goapi/middlewares/redirection-middleware"
 	"louissantucci/goapi/responses"
 	"net/http"
 )
@@ -21,6 +22,8 @@ func SetupRouter() *gin.Engine {
 	// Swagger
 
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	router.Use(redirection_middleware.HandleCall)
 
 	// Redirections
 

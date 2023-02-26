@@ -7,9 +7,12 @@ import (
 	"louissantucci/goapi/models"
 	"louissantucci/goapi/responses"
 	"net/http"
+	"regexp"
 	"strconv"
 	"time"
 )
+
+const URL_REGEX = `https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)`
 
 // GET /redirection
 
@@ -159,6 +162,13 @@ func EditRedirection(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
 		return
 	}
+
+	// Check redirection format
+	if !ValidateRedirectUrlFormat(input.RedirectUrl) {
+		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, "Redirection URL must be a valid URL beginning with http[s]://"))
+		return
+	}
+
 	redirection.Shortcut = input.Shortcut
 	redirection.RedirectUrl = input.RedirectUrl
 	redirection.UpdatedAt = time.Now()
@@ -212,6 +222,12 @@ func CreateRedirection(c *gin.Context) {
 	err = database.DB.Where("email = ?", email).First(&user).Error
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
+
+	// Check redirection format
+	if !ValidateRedirectUrlFormat(input.RedirectUrl) {
+		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, "Redirection URL must be a valid URL beginning with http[s]://"))
 		return
 	}
 
@@ -270,4 +286,9 @@ func DeleteRedirection(c *gin.Context) {
 	}
 	responseData := "Redirection #" + id + " deleted"
 	c.JSON(http.StatusOK, responses.NewOKResponse(responseData))
+}
+
+func ValidateRedirectUrlFormat(url string) bool {
+	regex, _ := regexp.Compile(URL_REGEX)
+	return regex.MatchString(url)
 }

@@ -167,4 +167,9 @@ export class RedirectionService {
       this.logger.error(error);
     }
   }
+
+  public incrementRedirectionView(id: number): Observable<OkResponse<Redirection>> {
+    const url = this.redirectionUrl + '/' + id;
+    return this.http.put<OkResponse<Redirection>>(url, {});
+  }
 }

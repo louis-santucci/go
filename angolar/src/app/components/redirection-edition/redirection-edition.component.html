@@ -12,7 +12,7 @@
     <p>
       <mat-form-field appearance="fill">
         <mat-label>RedirectUrl</mat-label>
-        <input matInput placeholder="facebook.com" formControlName="redirectUrl" required>
+        <input matInput placeholder="http[s]://facebook.com" formControlName="redirectUrl" required>
       </mat-form-field>
     </p>
     <button mat-fab extended color="primary" [disabled]="this.redirectionEditionFormGroup.invalid" type="submit">
