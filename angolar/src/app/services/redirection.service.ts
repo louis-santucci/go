@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {BehaviorSubject, Observable} from "rxjs";
 import {Redirection} from "../models/redirection";
 import {OkResponse} from "../responses/ok-response";
@@ -9,6 +9,10 @@ import {ToastLevel} from "../models/toast-level";
 import {RedirectionInput} from "../dtos/redirection/redirection.input";
 import {AlertService} from "./alert.service";
 import {MapUtils} from "../utils/map-utils";
+
+const httpOptions = {
+  headers: new HttpHeaders({'Content-Type': 'application/json'})
+};
 
 @Injectable({
   providedIn: 'root'
@@ -38,7 +42,7 @@ export class RedirectionService {
 
   public getRedirections(): void {
     try {
-      this.http.get<OkResponse<Redirection[]>>(this.redirectionUrl)
+      this.http.get<OkResponse<Redirection[]>>(this.redirectionUrl, httpOptions)
         .subscribe({
           next: res => {
             this.logger.log({status: res.status, data: res.data});
@@ -64,7 +68,7 @@ export class RedirectionService {
 
   public getRedirection(id: number): Observable<OkResponse<Redirection>> {
     const url = this.redirectionUrl + '/' + id;
-    return this.http.get<OkResponse<Redirection>>(url);
+    return this.http.get<OkResponse<Redirection>>(url, httpOptions);
   }
 
   public editRedirection(id: number, shortcut: string, redirectUrl: string): void {
@@ -74,7 +78,7 @@ export class RedirectionService {
         redirect_url: redirectUrl
       };
       const url = this.redirectionUrl + '/' + id;
-      this.http.post<OkResponse<Redirection>>(url, input)
+      this.http.post<OkResponse<Redirection>>(url, input, httpOptions)
         .subscribe({
           next: res => {
             this.logger.log({status: res.status, data: res.data});
@@ -105,7 +109,7 @@ export class RedirectionService {
         shortcut: shortcut,
         redirect_url: redirectUrl
       };
-      this.http.post<OkResponse<Redirection>>(this.redirectionUrl, input)
+      this.http.post<OkResponse<Redirection>>(this.redirectionUrl, input, httpOptions)
         .subscribe({
           next: res => {
             this.logger.log({status: res.status, data: res.data});
@@ -134,7 +138,7 @@ export class RedirectionService {
   public deleteRedirection(id: number) {
     try {
       const url = this.redirectionUrl + '/' + id;
-      this.http.delete<OkResponse<string>>(url)
+      this.http.delete<OkResponse<string>>(url, httpOptions)
         .subscribe({
           next: res => {
             this.logger.log({status: res.status, data: res.data});
@@ -170,6 +174,11 @@ export class RedirectionService {
 
   public incrementRedirectionView(id: number): Observable<OkResponse<Redirection>> {
     const url = this.redirectionUrl + '/' + id;
-    return this.http.put<OkResponse<Redirection>>(url, {});
+    return this.http.put<OkResponse<Redirection>>(url, {}, httpOptions);
+  }
+
+  public resetRedirectionView(id: number): Observable<OkResponse<Redirection>> {
+    const url = this.redirectionUrl + '/' + id;
+    return this.http.patch<OkResponse<Redirection>>(url, {}, httpOptions);
   }
 }
