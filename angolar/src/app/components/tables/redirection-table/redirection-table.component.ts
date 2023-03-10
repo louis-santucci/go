@@ -1,18 +1,18 @@
 import {Component, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {animate, state, style, transition, trigger} from "@angular/animations";
-import {Redirection} from "../../models/redirection";
+import {Redirection} from "../../../models/redirection";
 import {MatTableDataSource} from "@angular/material/table";
 import {Subscription} from "rxjs";
-import {RedirectionService} from "../../services/redirection.service";
+import {RedirectionService} from "../../../services/redirection.service";
 import {MatSort} from "@angular/material/sort";
-import {LoggerService} from "../../services/logger.service";
-import {DateUtils} from "../../utils/date-utils";
+import {LoggerService} from "../../../services/logger.service";
+import {DateUtils} from "../../../utils/date-utils";
 import {Router} from "@angular/router";
-import {UserService} from "../../services/user.service";
-import {UserInfo} from "../../models/user-info";
-import {ToastLevel} from "../../models/toast-level";
-import {StorageService} from "../../services/storage.service";
-import {TooltipUtils} from "../../utils/tooltip-utils";
+import {UserService} from "../../../services/user.service";
+import {UserInfo} from "../../../models/user-info";
+import {ToastLevel} from "../../../models/toast-level";
+import {StorageService} from "../../../services/storage.service";
+import {TooltipUtils} from "../../../utils/tooltip-utils";
 
 @Component({
   selector: 'app-redirection-table',
@@ -145,7 +145,7 @@ export class RedirectionTableComponent implements OnInit, OnDestroy {
     this.redirectionService.incrementRedirectionView(id).subscribe({
       next: res => {
         this.logger.log({status: res.status, data: res.data});
-        window.location.href = url;
+        window.open(url);
       },
       error: error => {
         this.logger.error(error)
