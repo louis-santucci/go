@@ -48,6 +48,12 @@ func SetupRouter() *gin.Engine {
 			user.GET("/info", jwt.JWTTokenCheck, controllers.GetUserInfo)
 			user.POST("/edit/:id", jwt.JWTTokenCheck, controllers.EditUser)
 		}
+
+		history := api.Group("/history")
+		{
+			history.GET("", controllers.GetHistory)
+			history.DELETE("/delete", controllers.ResetHistory)
+		}
 	}
 
 	// No routes
