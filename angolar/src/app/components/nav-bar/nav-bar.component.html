@@ -8,6 +8,13 @@
     </button>
     <span class="spacer"></span>
   </div>
+  <div *ngIf="isOnHomepage()">
+    <button mat-fab extended color="primary" (click)="goToHistory()">
+      <mat-icon>history</mat-icon>
+      History
+    </button>
+    <span class="spacer"></span>
+  </div>
   <div *ngIf="!isLoggedIn">
     <button mat-fab extended color="primary" (click)="login()">
       <mat-icon>login</mat-icon>
