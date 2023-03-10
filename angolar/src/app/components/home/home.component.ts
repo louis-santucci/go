@@ -11,7 +11,7 @@ import {Router} from "@angular/router";
 })
 export class HomeComponent implements OnInit, OnDestroy{
 
-  private redirectionMap?: Map<string, Redirection>;
+  private redirectionMap?: Map<number, Redirection>;
 
   private redirectionListSubscription?: Subscription;
 
