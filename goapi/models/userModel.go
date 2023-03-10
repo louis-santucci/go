@@ -1,12 +1,14 @@
 package models
 
 import (
+	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 	"time"
 )
 
 type User struct {
-	ID        int64     `json:"id" gorm:"primaryKey"`
+	ID        uuid.UUID `json:"id" gorm:"primaryKey"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email" gorm:"unique"`
 	Password  string    `json:"password"`
@@ -26,7 +28,7 @@ type UserLogin struct {
 }
 
 type UserInfo struct {
-	ID        int64     `json:"id"`
+	ID        uuid.UUID `json:"id"`
 	Name      string    `json:"name"`
 	Email     string    `json:"email"`
 	CreatedAt time.Time `json:"created_at"`
@@ -48,4 +50,10 @@ func (user *User) ComparePassword(givenPassword string) error {
 		return err
 	}
 	return nil
+}
+
+func (user *User) BeforeCreate(tx *gorm.DB) (err error) {
+	// UUID version 4
+	user.ID = uuid.New()
+	return
 }
