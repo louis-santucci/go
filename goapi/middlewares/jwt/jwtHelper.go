@@ -3,6 +3,7 @@ package jwt
 import (
 	"errors"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/google/uuid"
 	"louissantucci/goapi/config"
 	"louissantucci/goapi/database"
 	"louissantucci/goapi/models"
@@ -91,7 +92,7 @@ func ParseToken(jwtToken string) (*jwt.Token, error) {
 	return token, nil
 }
 
-func IsIdMatchingJwtToken(id string, header string) (int, error, *models.User) {
+func IsIdMatchingJwtToken(id uuid.UUID, header string) (int, error, *models.User) {
 	jwtToken, err := ExtractBearerToken(header)
 	if err != nil {
 		return http.StatusInternalServerError, err, nil

@@ -8,7 +8,6 @@ import {LoggerService} from "./logger.service";
 import {ToastLevel} from "../models/toast-level";
 import {RedirectionInput} from "../dtos/redirection/redirection.input";
 import {AlertService} from "./alert.service";
-import {MapUtils} from "../utils/map-utils";
 
 const httpOptions = {
   headers: new HttpHeaders({'Content-Type': 'application/json'})
@@ -23,10 +22,10 @@ export class RedirectionService {
   private readonly redirectionUrl: string;
 
   // Observable source
-  private redirectionMapSource = new BehaviorSubject<Map<string, Redirection> | undefined>(undefined)
+  private redirectionMapSource = new BehaviorSubject<Map<number, Redirection> | undefined>(undefined)
 
   // Observable source
-  private redirectionMapObservable: Observable<Map<string, Redirection> | undefined> = this.redirectionMapSource.asObservable();
+  private redirectionMapObservable: Observable<Map<number, Redirection> | undefined> = this.redirectionMapSource.asObservable();
 
   constructor(private http: HttpClient,
               private propertiesService: PropertiesService,
@@ -36,7 +35,7 @@ export class RedirectionService {
     this.redirectionUrl = this.backendUrl + '/api/redirection';
   }
 
-  public getRedirectionMapObservable(): Observable<Map<string, Redirection> | undefined> {
+  public getRedirectionMapObservable(): Observable<Map<number, Redirection> | undefined> {
     return this.redirectionMapObservable;
   }
 
@@ -48,9 +47,9 @@ export class RedirectionService {
             this.logger.log({status: res.status, data: res.data});
             if (res.status === 200) {
               const data = res.data;
-              const redirectionMap = new Map<string, Redirection>();
+              const redirectionMap = new Map<number, Redirection>();
               data.forEach(redirection => {
-                redirectionMap.set(redirection.shortcut, redirection);
+                redirectionMap.set(redirection.id, redirection);
               });
               this.redirectionMapSource.next(redirectionMap);
             }
@@ -86,8 +85,8 @@ export class RedirectionService {
               let currentMap = this.redirectionMapSource.getValue();
               if (currentMap !== undefined) {
                 const newRedirection = res.data;
-                currentMap = MapUtils.deleteById(currentMap, id);
-                currentMap.set(newRedirection.shortcut, newRedirection);
+                currentMap.delete(id);
+                currentMap.set(newRedirection.id, newRedirection);
                 this.redirectionMapSource.next(currentMap);
               }
             }
@@ -117,7 +116,7 @@ export class RedirectionService {
               const currentMap = this.redirectionMapSource.getValue();
               if (currentMap !== undefined) {
                 const newRedirection = res.data;
-                currentMap.set(newRedirection.shortcut, newRedirection);
+                currentMap.set(newRedirection.id, newRedirection);
                 this.redirectionMapSource.next(currentMap);
                 this.alertService.success('New Redirection for URL ' + newRedirection.redirect_url + ' created', false);
               }
@@ -144,17 +143,8 @@ export class RedirectionService {
             this.logger.log({status: res.status, data: res.data});
             if (res.status === 200) {
               const currentMap = this.redirectionMapSource.getValue();
-              let deletedShortcut = '';
               if (currentMap !== undefined) {
-                for (let entry of currentMap.values()) {
-                  if (entry.id === id) {
-                    deletedShortcut = entry.shortcut;
-                    break;
-                  }
-                }
-                if (deletedShortcut !== undefined) {
-                  currentMap.delete(deletedShortcut);
-                }
+                currentMap.delete(id);
                 this.redirectionMapSource.next(currentMap);
                 this.alertService.success('Redirection #' + id + ' deleted', false);
                 this.logger.toast(ToastLevel.SUCCESS, 'Redirection #' + id + ' deleted', 'Delete Redirection SUCCESS');

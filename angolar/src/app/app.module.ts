@@ -8,7 +8,7 @@ import {LoginComponent} from './components/login/login.component';
 import {HomeComponent} from './components/home/home.component';
 import {HashLocationStrategy, LocationStrategy} from "@angular/common";
 import {ToastrModule} from "ngx-toastr";
-import {RedirectionTableComponent} from './components/redirection-table/redirection-table.component';
+import {RedirectionTableComponent} from './components/tables/redirection-table/redirection-table.component';
 import {MatTableModule} from "@angular/material/table";
 import {MatIconModule} from "@angular/material/icon";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -31,6 +31,9 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import {ErrorNotFoundComponent} from './components/errors/error-not-found.component';
 import {MatCardModule} from "@angular/material/card";
 import {ErrorUnauthorizedComponent} from './components/errors/error-unauthorized.component';
+import { HistoryComponent } from './components/history/history.component';
+import { HistoryTableComponent } from './components/tables/history-table/history-table.component';
+import {MatPaginatorModule} from "@angular/material/paginator";
 
 @NgModule({
   declarations: [
@@ -46,6 +49,8 @@ import {ErrorUnauthorizedComponent} from './components/errors/error-unauthorized
     AlertComponent,
     ErrorNotFoundComponent,
     ErrorUnauthorizedComponent,
+    HistoryComponent,
+    HistoryTableComponent,
   ],
   imports: [
     BrowserModule,
@@ -63,6 +68,7 @@ import {ErrorUnauthorizedComponent} from './components/errors/error-unauthorized
     MatToolbarModule,
     MatTooltipModule,
     MatCardModule,
+    MatPaginatorModule,
   ],
   providers: [
     AuthGuard,

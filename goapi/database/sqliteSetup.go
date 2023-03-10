@@ -15,7 +15,7 @@ func ConnectDatabase(db_filename string) {
 		panic("Failed to connect to DB")
 	}
 
-	err = db.AutoMigrate(&models.User{}, &models.Redirection{})
+	err = db.AutoMigrate(&models.User{}, &models.Redirection{}, &models.HistoryEntry{})
 	if err != nil {
 		panic(err.Error())
 	}

@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"louissantucci/goapi/database"
 	"louissantucci/goapi/error-constants"
 	"louissantucci/goapi/middlewares/jwt"
@@ -118,7 +119,12 @@ func GetUserInfo(c *gin.Context) {
 func EditUser(c *gin.Context) {
 	id := c.Param("id")
 	authHeader := c.GetHeader("Authorization")
-	errCode, err, user := jwt.IsIdMatchingJwtToken(id, authHeader)
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
+		return
+	}
+	errCode, err, user := jwt.IsIdMatchingJwtToken(uid, authHeader)
 	if err != nil {
 		c.JSON(errCode, responses.NewErrorResponse(errCode, err.Error()))
 		return

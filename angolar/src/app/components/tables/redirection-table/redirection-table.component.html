@@ -1,11 +1,11 @@
-<span>
-  <button mat-icon-button (click)="displaySearchBar()">
-    <mat-icon>search</mat-icon>
-  </button>
-  <mat-form-field [class.cdk-visually-hidden]="isSearchBarHidden" class="center-text spacer-vertical">
-    <mat-label>Filter</mat-label>
-    <input matInput type="search" (keyup)="applyFilter($event)" placeholder="ex: Facebook" #input>
-  </mat-form-field>
+<span class="center-text">
+  <button mat-icon-button (click)="displaySearchBar()" class="center-text">
+  <mat-icon>search</mat-icon>
+</button>
+<mat-form-field [class.cdk-visually-hidden]="isSearchBarHidden">
+  <mat-label>Filter</mat-label>
+  <input matInput type="search" (keyup)="applyFilter($event)" placeholder="ex: Facebook" #input>
+</mat-form-field>
 </span>
 
 <table mat-table matSort

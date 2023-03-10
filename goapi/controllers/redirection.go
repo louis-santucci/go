@@ -8,7 +8,6 @@ import (
 	"louissantucci/goapi/responses"
 	"net/http"
 	"regexp"
-	"strconv"
 	"time"
 )
 
@@ -76,8 +75,50 @@ func IncrementRedirectionView(c *gin.Context) {
 
 	// Incrementation
 	redirection.Views = redirection.Views + 1
+	redirection.LastVisited = time.Now()
 
-	database.DB.Model(&redirection).Updates(redirection)
+	var newHistoryEntry models.HistoryEntry
+	var isLogged = false
+	// Get User ID
+	header := c.GetHeader("Authorization")
+	tokenStr, err := jwt.ExtractBearerToken(header)
+	if err == nil {
+		email, err := jwt.GetEmailFromToken(tokenStr)
+		if err == nil {
+			var user models.User
+
+			err = database.DB.Where("email = ?", email).First(&user).Error
+			if err == nil {
+				newHistoryEntry = models.HistoryEntry{
+					VisitedAt:     redirection.LastVisited,
+					RedirectionId: redirection.ID,
+					UserId:        user.ID,
+				}
+				isLogged = true
+			} else {
+				isLogged = false
+			}
+		}
+	}
+
+	if !isLogged {
+		newHistoryEntry = models.HistoryEntry{
+			VisitedAt:     redirection.LastVisited,
+			RedirectionId: redirection.ID,
+		}
+	}
+
+	err = database.DB.Model(&newHistoryEntry).Create(&newHistoryEntry).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
+
+	err = database.DB.Model(&redirection).Updates(redirection).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
 
 	c.JSON(http.StatusOK, responses.NewOKResponse(redirection))
 }
@@ -105,7 +146,7 @@ func ResetRedirectionView(c *gin.Context) {
 	}
 
 	authHeader := c.GetHeader("Authorization")
-	errCode, err, _ := jwt.IsIdMatchingJwtToken(strconv.FormatInt(redirection.CreatorId, 10), authHeader)
+	errCode, err, _ := jwt.IsIdMatchingJwtToken(redirection.ID, authHeader)
 	if err != nil {
 		c.JSON(errCode, responses.NewErrorResponse(errCode, err.Error()))
 		return
@@ -151,7 +192,7 @@ func EditRedirection(c *gin.Context) {
 	}
 
 	authHeader := c.GetHeader("Authorization")
-	errCode, err, _ := jwt.IsIdMatchingJwtToken(strconv.FormatInt(redirection.CreatorId, 10), authHeader)
+	errCode, err, _ := jwt.IsIdMatchingJwtToken(redirection.CreatorId, authHeader)
 	if err != nil {
 		c.JSON(errCode, responses.NewErrorResponse(errCode, err.Error()))
 		return
@@ -274,7 +315,7 @@ func DeleteRedirection(c *gin.Context) {
 	}
 
 	authHeader := c.GetHeader("Authorization")
-	errCode, err, _ := jwt.IsIdMatchingJwtToken(strconv.FormatInt(redirection.CreatorId, 10), authHeader)
+	errCode, err, _ := jwt.IsIdMatchingJwtToken(redirection.CreatorId, authHeader)
 	if err != nil {
 		c.JSON(errCode, responses.NewErrorResponse(errCode, err.Error()))
 		return
@@ -286,6 +327,14 @@ func DeleteRedirection(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
+
+	// Delete all history entries for this redirection
+	err = database.DB.Delete(&models.HistoryEntry{}, "redirection_id = ?", redirection.ID).Error
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
+
 	responseData := "Redirection #" + id + " deleted"
 	c.JSON(http.StatusOK, responses.NewOKResponse(responseData))
 }

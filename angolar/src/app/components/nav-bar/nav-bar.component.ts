@@ -59,4 +59,8 @@ export class NavBarComponent implements OnInit, OnDestroy {
   goToHomepage(): void {
     RoutingUtils.goToHomepage(this.router);
   }
+
+  goToHistory(): void {
+    RoutingUtils.goToHistoryPage(this.router);
+  }
 }

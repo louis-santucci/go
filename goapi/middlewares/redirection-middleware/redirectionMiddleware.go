@@ -6,6 +6,8 @@ import (
 	"louissantucci/goapi/models"
 	"net/http"
 	"strings"
+	"time"
+	"unicode/utf8"
 )
 
 // HandleCall
@@ -27,7 +29,9 @@ func HandleCall(c *gin.Context) {
 
 func HandleRedirectionCall(c *gin.Context) {
 	var redirection models.Redirection
+	var newHistoryEntry models.HistoryEntry
 	shortcut := c.Request.URL.Path
+	shortcut = trimFirstRune(shortcut)
 	err := database.DB.Where("shortcut = ?", shortcut).First(&redirection).Error
 	if err != nil {
 		c.Redirect(http.StatusSeeOther, "http://localhost:9091/#/error/notFound")
@@ -37,10 +41,24 @@ func HandleRedirectionCall(c *gin.Context) {
 
 	// Incrementation
 	redirection.Views = redirection.Views + 1
+	redirection.LastVisited = time.Now()
 
 	database.DB.Model(&redirection).Updates(redirection)
+
+	// Add to history
+	newHistoryEntry = models.HistoryEntry{
+		VisitedAt:     redirection.LastVisited,
+		RedirectionId: redirection.ID,
+	}
+
+	database.DB.Model(&newHistoryEntry).Create(&newHistoryEntry)
 
 	c.Redirect(http.StatusSeeOther, newUrl)
 
 	return
+}
+
+func trimFirstRune(s string) string {
+	_, i := utf8.DecodeRuneInString(s)
+	return s[i:]
 }
