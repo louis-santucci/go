@@ -46,3 +46,5 @@ Moreover, there is another custom middleware used to check if the request is com
     - [x] Choose front-end framework: ANGULAR
     - [x] Login/Logout component
     - [x] Create form and component to Add/Update redirections
+    - [x] Add history
+    - [ ] User handling
