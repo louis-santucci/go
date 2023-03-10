@@ -7,16 +7,17 @@ import {RedirectionCreationComponent} from "./components/redirection-creation/re
 import {RedirectionEditionComponent} from "./components/redirection-edition/redirection-edition.component";
 import {UserInfoComponent} from "./components/user-info/user-info.component";
 import {AuthGuard} from "./guards/auth.guard";
-import {ParameterGuard} from "./guards/parameter.guard";
 import {ErrorNotFoundComponent} from "./components/errors/error-not-found.component";
 import {ErrorUnauthorizedComponent} from "./components/errors/error-unauthorized.component";
+import {HistoryComponent} from "./components/history/history.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'login', component: LoginComponent},
+  {path: 'history', component: HistoryComponent},
   {path: 'redirection/new', component: RedirectionCreationComponent, canActivate: [AuthGuard]},
-  {path: 'redirection/edit/:id', component: RedirectionEditionComponent, canActivate: [AuthGuard, ParameterGuard]},
+  {path: 'redirection/edit/:id', component: RedirectionEditionComponent, canActivate: [AuthGuard]},
   {path: 'user/info', component: UserInfoComponent, canActivate: [AuthGuard]},
   {path: 'error/notFound', component: ErrorNotFoundComponent},
   {path: 'error/unauthorized', component: ErrorUnauthorizedComponent},
