@@ -21,8 +21,6 @@ RUN npm run build
 # Use official nginx image as the base image
 FROM nginx:latest
 
-ENV HOME=/home/louissantucci
-
 # Copy the build output to replace the default nginx contents.
 COPY --from=build /angolar/dist/angolar /usr/share/nginx/html
 
@@ -32,9 +30,9 @@ COPY ./docker/nginx/self-signed.conf /etc/nginx/snippets
 
 # WARNING: environment dependency
 # Copying SSL certificates to enable HTTPS: need to be changed for your usage
-COPY $HOME/Documents/certs/certs/nginx.crt /etc/ssl/certs
-COPY $HOME/Documents/certs/private/nginx.key /etc/ssl/private
-COPY $HOME/Documents/certs/pem/dhparam.pem /etc/nginx
+COPY ./certs/certs/nginx.crt /etc/ssl/certs
+COPY ./certs/private/nginx.key /etc/ssl/private
+COPY ./certs/pem/dhparam.pem /etc/nginx
 
 # Expose port 80
 EXPOSE 80
