@@ -16,5 +16,8 @@ COPY ./docker/config/config.go ./config
 
 RUN go build -v -o goapi .
 
+VOLUME ./certs/certs:/certs/certs
+VOLUME ./certs/private:/certs/private
+
 EXPOSE 9090
 

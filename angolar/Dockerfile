@@ -34,6 +34,10 @@ COPY ./docker/nginx/self-signed.conf /etc/nginx/snippets/
 #COPY ./certs/private/nginx.key /etc/ssl/private/
 #COPY ./certs/pem/dhparam.pem /etc/nginx/
 
+VOLUME ./certs/certs:/etc/ssl/certs
+VOLUME ./certs/privare:/etc/ssl/private
+VOLUME ./certs/pem:/etc/nginx
+
 # Expose port 80
 EXPOSE 80
 EXPOSE 443
