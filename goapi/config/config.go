@@ -8,5 +8,3 @@ const Jwt_secret = "" //FIXME TO be changed for security purposes
 // which is a special feature for the Angolar application
 const Angolar_secret = "" //FIXME TO be changed for security purposes
 const TLS_enabled = false
-
-const CertsFolder = "~/Documents/certs"
