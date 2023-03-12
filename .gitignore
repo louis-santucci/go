@@ -1,3 +1,4 @@
 /.idea
 /goapi/go-db.db
 /goapi/goapi.exe
+certs/
