@@ -4,7 +4,7 @@ FROM node:alpine as build
 WORKDIR /angolar
 
 # Add the source code to app
-COPY ./ /angolar
+COPY ./angolar /angolar
 
 # Install all the dependencies
 RUN npm install
@@ -20,6 +20,9 @@ FROM nginx:latest
 
 # Copy the build output to replace the default nginx contents.
 COPY --from=build /angolar/dist/angolar /usr/share/nginx/html
+
+# Copy nginx.conf file for custom Nginx config
+COPY ./nginx/nginx.conf /etc/nginx/conf.d/
 
 # Expose port 80
 EXPOSE 80

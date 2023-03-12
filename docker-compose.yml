@@ -13,8 +13,8 @@ services:
     restart: always
     container_name: angolar
     build:
-      context: ./angolar
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./angolar/Dockerfile
     ports:
       - '9091:80'
     depends_on:

@@ -1,4 +1,4 @@
 /.idea
 /goapi/go-db.db
 /goapi/goapi.exe
-/goapi/certs
+/nginx/certs
