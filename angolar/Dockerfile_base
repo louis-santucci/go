@@ -1,0 +1,15 @@
+FROM node
+
+RUN npm install -g @angular/cli
+
+WORKDIR /angolar
+
+COPY package.json .
+
+RUN npm install
+
+COPY . .
+
+EXPOSE 9091
+
+CMD ng serve --host 0.0.0.0 --port 9091

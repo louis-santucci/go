@@ -1,0 +1,21 @@
+version: '3.4'
+
+services:
+  goapi:
+    restart: always
+    container_name: goapi
+    build:
+      context: ./goapi
+      dockerfile: Dockerfile
+    ports:
+      - '9090:9090'
+  angolar:
+    restart: always
+    container_name: angolar
+    build:
+      context: ./angolar
+      dockerfile: Dockerfile
+    ports:
+      - '9091:80'
+    depends_on:
+      - goapi
