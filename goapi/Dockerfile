@@ -23,6 +23,8 @@ RUN go build -v -o goapi .
 
 EXPOSE 9090
 
-CMD [ "./goapi" ]
+ENV GIN_MODE=release
+
+CMD [ "/bin/sh" ]
 
 
