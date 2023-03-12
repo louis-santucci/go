@@ -23,3 +23,4 @@ RUN go build -v -o goapi .
 
 EXPOSE 9090
 
+CMD [ "./goapi" ]
