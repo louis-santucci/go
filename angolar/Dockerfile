@@ -25,8 +25,8 @@ FROM nginx:latest
 COPY --from=build /angolar/dist/angolar /usr/share/nginx/html
 
 # Copy nginx.conf file for custom Nginx config
-COPY ./docker/nginx/nginx.conf /etc/nginx/conf.d
-COPY ./docker/nginx/self-signed.conf /etc/nginx/snippets
+COPY ./docker/nginx/nginx.conf /etc/nginx/conf.d/
+COPY ./docker/nginx/self-signed.conf /etc/nginx/snippets/
 
 # WARNING: environment dependency
 # Copying SSL certificates to enable HTTPS: need to be changed for your usage

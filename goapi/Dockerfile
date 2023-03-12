@@ -11,7 +11,7 @@ RUN go mod download
 
 # WARNING: environment dependency
 # Copying SSL certificates to enable HTTPS: need to be changed for your usage
-COPY ./certs/certs/nginx.crt ./certs/
+COPY ./certs/private/nginx.key ./certs/
 COPY ./certs/pem/dhparam.pem ./certs/
 
 COPY ./goapi .
@@ -22,3 +22,4 @@ COPY ./docker/config/config.go ./config
 RUN go build -v -o goapi .
 
 EXPOSE 9090
+
