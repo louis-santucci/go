@@ -16,8 +16,8 @@ COPY ./docker/config/config.go ./config
 
 # WARNING: environment dependency
 # Copying SSL certificates to enable HTTPS: need to be changed for your usage
-COPY ./certs/certs/nginx.crt ./certs
-COPY ./certs/private/nginx.key ./certs
+COPY ./certs/certs/nginx.crt ./certs/
+COPY ./certs/private/nginx.key ./certs/
 
 RUN go build -v -o goapi .
 
@@ -25,6 +25,4 @@ EXPOSE 9090
 
 ENV GIN_MODE=release
 
-CMD [ "/bin/sh" ]
-
-
+CMD [ "/goapi" ]
