@@ -9,11 +9,6 @@ COPY ./goapi/go.sum ./
 
 RUN go mod download
 
-# WARNING: environment dependency
-# Copying SSL certificates to enable HTTPS: need to be changed for your usage
-COPY ./certs/private/nginx.key ./certs/
-COPY ./certs/certs/nginx.crt ./certs/
-
 COPY ./goapi .
 
 # Overwriting Docker config file
