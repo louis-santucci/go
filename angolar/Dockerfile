@@ -1,4 +1,4 @@
-FROM node:alpine as build
+FROM node:18.15-alpine as build
 
 # Set the working directory
 WORKDIR /angolar
@@ -7,10 +7,10 @@ WORKDIR /angolar
 COPY ./angolar .
 
 # Install all the dependencies
-RUN npm install
+RUN npm install --loglevel verbose
 
 # Overwriting Docker config file
-COPY ./docker/config/properties.service.ts .
+COPY ./docker/config/properties.service.ts ./src/app/services
 
 # Generate the build of the application
 RUN npm run build
@@ -25,8 +25,8 @@ FROM nginx:latest
 COPY --from=build /angolar/dist/angolar /usr/share/nginx/html
 
 # Copy nginx.conf file for custom Nginx config
-COPY ./nginx/nginx.conf /etc/nginx/conf.d
-COPY ./nginx/self-signed.conf /etc/nginx/snippets
+COPY ./docker/nginx/nginx.conf /etc/nginx/conf.d
+COPY ./docker/nginx/self-signed.conf /etc/nginx/snippets
 
 # WARNING: environment dependency
 # Copying SSL certificates to enable HTTPS: need to be changed for your usage
