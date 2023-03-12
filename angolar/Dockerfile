@@ -4,10 +4,13 @@ FROM node:alpine as build
 WORKDIR /angolar
 
 # Add the source code to app
-COPY ./angolar /angolar
+COPY ./angolar .
 
 # Install all the dependencies
 RUN npm install
+
+# Overwriting Docker config file
+COPY ./docker/config/properties.service.ts .
 
 # Generate the build of the application
 RUN npm run build

@@ -6,12 +6,15 @@ WORKDIR /goapi
 
 RUN apk add --no-cache gcc g++ git openssh-client
 
-COPY go.mod ./
-COPY go.sum ./
+COPY ./goapi/go.mod ./
+COPY ./goapi/go.sum ./
 
 RUN go mod download
 
-COPY . .
+COPY ./goapi .
+
+# Overwriting Docker config file
+COPY ./docker/config/config.go ./
 
 RUN go build -o goapi
 

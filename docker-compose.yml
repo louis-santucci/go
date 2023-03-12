@@ -5,8 +5,8 @@ services:
     restart: always
     container_name: goapi
     build:
-      context: ./goapi
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./goapi/Dockerfile
     ports:
       - '9090:9090'
   angolar:
