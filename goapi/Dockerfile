@@ -16,7 +16,7 @@ COPY ./goapi .
 # Overwriting Docker config file
 COPY ./docker/config/config.go ./config
 
-RUN go build -o goapi
+RUN go build -v -o goapi .
 
 CMD [ "./goapi" ]
 
