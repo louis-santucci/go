@@ -30,9 +30,9 @@ COPY ./docker/nginx/self-signed.conf /etc/nginx/snippets
 
 # WARNING: environment dependency
 # Copying SSL certificates to enable HTTPS: need to be changed for your usage
-COPY ~/Documents/certs/certs/nginx.crt /etc/ssl/certs
-COPY ~/Documents/certs/private/nginx.key /etc/ssl/private
-COPY ~/Documents/certs/pem/dhparam.pem /etc/nginx
+COPY $HOME/Documents/certs/certs/nginx.crt /etc/ssl/certs
+COPY $HOME/Documents/certs/private/nginx.key /etc/ssl/private
+COPY $HOME/Documents/certs/pem/dhparam.pem /etc/nginx
 
 # Expose port 80
 EXPOSE 80
