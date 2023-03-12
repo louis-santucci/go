@@ -21,6 +21,8 @@ RUN npm run build
 # Use official nginx image as the base image
 FROM nginx:latest
 
+ENV HOME=/home/louissantucci
+
 # Copy the build output to replace the default nginx contents.
 COPY --from=build /angolar/dist/angolar /usr/share/nginx/html
 
