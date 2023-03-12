@@ -7,6 +7,9 @@ services:
     build:
       context: .
       dockerfile: ./goapi/Dockerfile
+    volumes:
+      - ./certs/certs:/certs/certs
+      - ./certs/private:/certs/private
     ports:
       - '9090:9090'
   angolar:
@@ -18,5 +21,9 @@ services:
     ports:
       - '9091:80'
       - '443:443'
+    volumes:
+      - ./certs/certs:/etc/ssl/certs
+      - ./certs/private:/etc/ssl/private
+      - ./certs/pem:/etc/nginx
     depends_on:
       - goapi
