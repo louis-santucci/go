@@ -18,5 +18,9 @@ services:
     ports:
       - '9091:80'
       - '443:443'
+    volumes:
+      - ~/Documents/certs/nginx.crt:/etc/ssl/certs
+      - ~/Documents/certs/nginx.key:/etc/ssl/private
+      - ~/Documents/certs/dhparam.pem:/etc/nginx
     depends_on:
       - goapi
