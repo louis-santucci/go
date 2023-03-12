@@ -27,7 +27,7 @@ func main() {
 
 	var err error
 	if config.TLS_enabled {
-		err = router.RunTLS(":9090", "./certs/certs/nginx.crt", "./certs/private/nginx.key")
+		err = router.RunTLS(":9090", "./certs/nginx.crt", "./certs/nginx.key")
 	} else {
 		err = router.Run(":9090")
 	}
