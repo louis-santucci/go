@@ -9,7 +9,6 @@ services:
       dockerfile: ./goapi/Dockerfile
     ports:
       - '9090:9090'
-      - '443:443'
   angolar:
     restart: always
     container_name: angolar
