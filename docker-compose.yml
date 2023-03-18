@@ -18,5 +18,3 @@ services:
       dockerfile: ./angolar/Dockerfile
     ports:
       - '9091:9091'
-    depends_on:
-      - goapi
