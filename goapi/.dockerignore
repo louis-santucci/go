@@ -1,4 +1,5 @@
 README.md
 goapi.exe
-go-db.db
+db/go-db.db
 Dockerfile
+docs/**

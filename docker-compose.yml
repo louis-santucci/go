@@ -1,21 +1,31 @@
-version: '3.4'
+version: '3.8'
 
 services:
   goapi:
-    restart: always
+    restart: unless-stopped
     container_name: goapi
     build:
-      context: ./goapi
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./goapi/Dockerfile
     ports:
       - '9090:9090'
+    volumes:
+      - "./goapi/db:/goapi/db"
   angolar:
-    restart: always
+    restart: unless-stopped
     container_name: angolar
     build:
-      context: ./angolar
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./angolar/Dockerfile
     ports:
-      - '9091:80'
-    depends_on:
-      - goapi
+      - '80:80'
+      - '9091:443'
+#  nginx:
+#    container_name: nginx
+#    restart: unless-stopped
+#    ports:
+#      - '443:443'
+#      - '80:80'
+#    build:
+#      context: .
+#      dockerfile: ./docker/nginx/Dockerfile

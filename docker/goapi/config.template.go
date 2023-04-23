@@ -7,5 +7,5 @@ const Jwt_secret = "" //FIXME TO be changed for security purposes
 // to request the API for certain endpoints, such like the incrementation of the views,
 // which is a special feature for the Angolar application
 const Angolar_secret = "" //FIXME TO be changed for security purposes
-const TLS_enabled = false
-const HOST = "localhost"
+const TLS_enabled = true
+const HOST = "${IP}"
