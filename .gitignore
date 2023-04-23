@@ -1,4 +1,5 @@
 /.idea
-/goapi/go-db.db
+/goapi/db/go-db.db
 /goapi/goapi.exe
-/goapi/certs
+certs/
+**/.env

@@ -12,7 +12,8 @@ const CONTENT_LENGTH = "Content-Length"
 
 func CorsConfig() cors.Config {
 	corsConfig := cors.DefaultConfig()
-	corsConfig.AllowOrigins = []string{"http://localhost:9091", "https://localhost:9091", "https://go.go", "http://go.go"}
+	const host = HOST + ":9091"
+	corsConfig.AllowOrigins = []string{"http://" + host, "https://" + host}
 	corsConfig.AllowCredentials = true
 	corsConfig.AllowHeaders = []string{ORIGIN, AUTHORIZATION, CONTENT_TYPE, ANGOLAR_SECRET}
 	corsConfig.ExposeHeaders = []string{CONTENT_TYPE, CONTENT_LENGTH}

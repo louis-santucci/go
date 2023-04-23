@@ -15,7 +15,7 @@ import (
 // @contact.name   	SANTUCCI Louis
 // @contact.email  	louissantucci1998@gmail.com
 
-// @host      		localhost:9090
+// @host      		${IP}:9090
 // @BasePath		/api
 func main() {
 
