@@ -23,6 +23,11 @@ export class NavBarComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.eventBusSubscription = this.eventBusService.on('logout', () => {
       this.logout();
+    });
+    this.eventBusService.on('emailUpdate', (email: string) => {
+      if (this.isLoggedIn) {
+        this.loggedInEmail = email;
+      }
     })
     this.isLoggedIn = this.storageService.isLoggedIn();
     if (this.isLoggedIn) {
@@ -35,11 +40,11 @@ export class NavBarComponent implements OnInit, OnDestroy {
   }
 
   login(): void {
-    this.router.navigateByUrl('/login');
+    RoutingUtils.goToLoginPage(this.router, '');
   }
 
   register(): void {
-    this.router.navigateByUrl('/register');
+    RoutingUtils.goToRegisterPage(this.router);
   }
 
   logout(): void {
@@ -53,7 +58,7 @@ export class NavBarComponent implements OnInit, OnDestroy {
   }
 
   getUserInfo(): void {
-    this.router.navigateByUrl('/user/info');
+    RoutingUtils.goToUserInformationPage(this.router);
   }
 
   goToHomepage(): void {
