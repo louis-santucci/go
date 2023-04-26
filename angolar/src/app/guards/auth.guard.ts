@@ -3,6 +3,7 @@ import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTre
 import { Observable } from 'rxjs';
 import {StorageService} from "../services/storage.service";
 import {AlertService} from "../services/alert.service";
+import {RoutingUtils} from "../utils/routing-utils";
 
 @Injectable({
   providedIn: 'root'
@@ -24,9 +25,7 @@ export class AuthGuard implements CanActivate {
 
     // Not logged so redirect to login page
     this.alertService.error('ERROR: You need to be logged in to access this page.', true);
-    this.router.navigate(['/login'], {
-      queryParams: { returnUrl: state.url }
-    });
+    RoutingUtils.goToLoginPage(this.router, state.url);
     return false;
   }
 

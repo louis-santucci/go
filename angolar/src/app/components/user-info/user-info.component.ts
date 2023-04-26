@@ -8,6 +8,7 @@ import {DateUtils} from "../../utils/date-utils";
 import {Router} from "@angular/router";
 import {EventBusService} from "../../services/event-bus.service";
 import {EventData} from "../../models/event-data";
+import {RoutingUtils} from "../../utils/routing-utils";
 
 @Component({
   selector: 'app-user-info',
@@ -42,7 +43,7 @@ export class UserInfoComponent implements OnInit {
   }
 
   public openEdition() {
-    this.router.navigateByUrl("/user/edit");
+    RoutingUtils.goToUserEditionPage(this.router);
   }
 
   public deleteUser() {
