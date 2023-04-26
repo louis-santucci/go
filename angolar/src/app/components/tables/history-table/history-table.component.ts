@@ -115,9 +115,4 @@ export class HistoryTableComponent implements OnInit, OnDestroy {
     }
     return '';
   }
-
-
-  public isUserLoggedIn(): boolean {
-    return this.storageService.isLoggedIn();
-  }
 }
