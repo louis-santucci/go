@@ -46,7 +46,8 @@ func SetupRouter() *gin.Engine {
 			user.POST("/login", controllers.LoginUser)
 			user.POST("/register", controllers.RegisterUser)
 			user.GET("/info", jwt.JWTTokenCheck, controllers.GetUserInfo)
-			user.POST("/edit/:id", jwt.JWTTokenCheck, controllers.EditUser)
+			user.POST("/edit", jwt.JWTTokenCheck, controllers.EditUser)
+			user.DELETE("/delete", jwt.JWTTokenCheck, controllers.DeleteUser)
 		}
 
 		history := api.Group("/history")
