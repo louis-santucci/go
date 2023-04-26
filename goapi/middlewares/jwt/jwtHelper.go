@@ -5,9 +5,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"louissantucci/goapi/config"
-	"louissantucci/goapi/database"
 	"louissantucci/goapi/models"
-	"net/http"
 	"strings"
 	"time"
 )
@@ -17,8 +15,9 @@ var jwtKey = []byte(config.Jwt_secret)
 const EXPIRATION_TIME = 1 * time.Hour
 
 type Claim struct {
-	Email string `json:"email"`
-	Name  string `json:"name"`
+	Id    uuid.UUID `json:"id"`
+	Email string    `json:"email"`
+	Name  string    `json:"name"`
 	jwt.RegisteredClaims
 }
 
@@ -26,11 +25,12 @@ func GetSecretKey() string {
 	return config.Jwt_secret
 }
 
-func GenerateJWT(email string, name string) (tokenString string, err error) {
+func GenerateJWT(user *models.User) (tokenString string, err error) {
 	expirationTime := time.Now().Add(EXPIRATION_TIME)
 	claims := &Claim{
-		Email: email,
-		Name:  name,
+		Id:    user.ID,
+		Email: user.Email,
+		Name:  user.Name,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
@@ -40,7 +40,7 @@ func GenerateJWT(email string, name string) (tokenString string, err error) {
 	return
 }
 
-func GetEmailFromToken(jwtToken string) (string, error) {
+func GetClaimFromToken(jwtToken string) (*Claim, error) {
 	token, err := jwt.ParseWithClaims(
 		jwtToken,
 		&Claim{},
@@ -50,17 +50,16 @@ func GetEmailFromToken(jwtToken string) (string, error) {
 	)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	claims, ok := token.Claims.(*Claim)
 	if !ok {
 		err = errors.New("couldn't parse claims")
-		return "", err
+		return nil, err
 	}
 
-	return claims.Email, nil
-
+	return claims, nil
 }
 
 func ExtractBearerToken(header string) (string, error) {
@@ -90,28 +89,4 @@ func ParseToken(jwtToken string) (*jwt.Token, error) {
 	}
 
 	return token, nil
-}
-
-func IsIdMatchingJwtToken(id uuid.UUID, header string) (int, error, *models.User) {
-	jwtToken, err := ExtractBearerToken(header)
-	if err != nil {
-		return http.StatusInternalServerError, err, nil
-	}
-	email, err := GetEmailFromToken(jwtToken)
-	if err != nil {
-		return http.StatusInternalServerError, err, nil
-	}
-
-	var user models.User
-
-	err = database.DB.Where("id = ?", id).First(&user).Error
-	if err != nil {
-		return http.StatusNotFound, err, nil
-	}
-
-	if user.Email != email {
-		err = errors.New("ID doesn't match the JWT auth token")
-		return http.StatusForbidden, err, nil
-	}
-	return 0, nil, &user
 }
