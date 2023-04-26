@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	uuid2 "github.com/google/uuid"
 	"louissantucci/goapi/database"
 	"louissantucci/goapi/error-constants"
 	"louissantucci/goapi/middlewares/jwt"
@@ -71,7 +70,7 @@ func RegisterUser(c *gin.Context) {
 // @Router						/user/info [get]
 func GetUserInfo(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
-	claim, err := jwt.GetClaimFromToken(authHeader)
+	claim, err := jwt.GetClaimFromHeader(authHeader)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
@@ -100,7 +99,7 @@ func DeleteUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
-	claim, err := jwt.GetClaimFromToken(jwtToken)
+	claim, err := jwt.GetClaimFromHeader(jwtToken)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
@@ -132,18 +131,12 @@ func DeleteUser(c *gin.Context) {
 // @Failure						403 	{object} 	responses.ErrorResponse
 // @Failure						404 	{object} 	responses.ErrorResponse
 // @Failure						500 	{object} 	responses.ErrorResponse
-// @Router						/user/edit/{id} [post]
+// @Router						/user/edit [post]
 func EditUser(c *gin.Context) {
 	authHeader := c.GetHeader("Authorization")
-	claim, err := jwt.GetClaimFromToken(authHeader)
+	claim, err := jwt.GetClaimFromHeader(authHeader)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
-		return
-	}
-	idStr := c.Param("id")
-	id, err := uuid2.Parse(idStr)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
 		return
 	}
 
@@ -155,7 +148,7 @@ func EditUser(c *gin.Context) {
 		return
 	}
 
-	updatedUser, err := services.EditUser(id, claim.Id, input)
+	updatedUser, err := services.EditUser(claim.Id, input)
 	if err != nil {
 		switch err.Error() {
 		case error_constants.UnauthorizedError:
@@ -165,8 +158,9 @@ func EditUser(c *gin.Context) {
 		}
 		return
 	}
+	userInfo, tokenStr, err := services.LoginUser(updatedUser.Email, input.Password)
 
-	c.JSON(http.StatusOK, responses.NewOKResponse(updatedUser))
+	c.JSON(http.StatusOK, responses.NewJWTResponse(http.StatusOK, *tokenStr, userInfo))
 }
 
 // POST /user/login
@@ -185,7 +179,6 @@ func EditUser(c *gin.Context) {
 // @Router						/user/login [post]
 func LoginUser(c *gin.Context) {
 	var loginRequest models.UserLogin
-	var user models.User
 
 	err := c.ShouldBindJSON(&loginRequest)
 	if err != nil {
@@ -193,7 +186,7 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
-	tokenStr, err := services.LoginUser(loginRequest)
+	userInfo, tokenStr, err := services.LoginUser(loginRequest.Email, loginRequest.Password)
 	if err != nil {
 		switch err.Error() {
 		case error_constants.UnauthorizedError:
@@ -203,7 +196,7 @@ func LoginUser(c *gin.Context) {
 		}
 		return
 	}
-	c.JSON(http.StatusOK, responses.NewJWTResponse(http.StatusOK, *tokenStr, user.Email))
+	c.JSON(http.StatusOK, responses.NewJWTResponse(http.StatusOK, *tokenStr, userInfo))
 }
 
 // GetUsers			godoc

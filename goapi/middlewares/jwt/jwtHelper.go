@@ -40,9 +40,10 @@ func GenerateJWT(user *models.User) (tokenString string, err error) {
 	return
 }
 
-func GetClaimFromToken(jwtToken string) (*Claim, error) {
+func GetClaimFromHeader(header string) (*Claim, error) {
+	tokenStr, err := ExtractBearerToken(header)
 	token, err := jwt.ParseWithClaims(
-		jwtToken,
+		tokenStr,
 		&Claim{},
 		func(token *jwt.Token) (interface{}, error) {
 			return jwtKey, nil

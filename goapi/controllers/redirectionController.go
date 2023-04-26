@@ -86,7 +86,7 @@ func IncrementRedirectionView(c *gin.Context) {
 	var newHistoryEntry models.HistoryEntry
 	// Get User ID
 	header := c.GetHeader("Authorization")
-	claim, err := jwt.GetClaimFromToken(header)
+	claim, err := jwt.GetClaimFromHeader(header)
 	if err == nil {
 		newHistoryEntry = models.HistoryEntry{
 			VisitedAt:     redirection.LastVisited,
@@ -138,7 +138,7 @@ func ResetRedirectionView(c *gin.Context) {
 	}
 
 	authHeader := c.GetHeader("Authorization")
-	claim, err := jwt.GetClaimFromToken(authHeader)
+	claim, err := jwt.GetClaimFromHeader(authHeader)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
@@ -194,7 +194,7 @@ func EditRedirection(c *gin.Context) {
 	}
 
 	authHeader := c.GetHeader("Authorization")
-	claim, err := jwt.GetClaimFromToken(authHeader)
+	claim, err := jwt.GetClaimFromHeader(authHeader)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
@@ -240,7 +240,7 @@ func CreateRedirection(c *gin.Context) {
 	}
 
 	header := c.GetHeader("Authorization")
-	claim, err := jwt.GetClaimFromToken(header)
+	claim, err := jwt.GetClaimFromHeader(header)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
@@ -283,7 +283,7 @@ func DeleteRedirection(c *gin.Context) {
 		return
 	}
 	authHeader := c.GetHeader("Authorization")
-	claim, err := jwt.GetClaimFromToken(authHeader)
+	claim, err := jwt.GetClaimFromHeader(authHeader)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
