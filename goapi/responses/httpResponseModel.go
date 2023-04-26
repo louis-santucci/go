@@ -1,6 +1,9 @@
 package responses
 
-import "net/http"
+import (
+	"louissantucci/goapi/models"
+	"net/http"
+)
 
 type OKResponse struct {
 	Status int         `json:"status"`
@@ -13,9 +16,9 @@ type ErrorResponse struct {
 }
 
 type JWTResponse struct {
-	Status int    `json:"status"`
-	Token  string `json:"token"`
-	Email  string `json:"email"`
+	Status int              `json:"status"`
+	Token  string           `json:"token"`
+	User   *models.UserInfo `json:"user"`
 }
 
 func NewErrorResponse(status int, error interface{}) ErrorResponse {
@@ -32,10 +35,10 @@ func NewOKResponse(data interface{}) OKResponse {
 	}
 }
 
-func NewJWTResponse(status int, token string, email string) JWTResponse {
+func NewJWTResponse(status int, token string, userInfo *models.UserInfo) JWTResponse {
 	return JWTResponse{
 		Status: status,
 		Token:  token,
-		Email:  email,
+		User:   userInfo,
 	}
 }
