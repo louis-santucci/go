@@ -14,14 +14,12 @@ export class AuthInterceptor implements HttpInterceptor {
   private static BAD_JWT_TOKEN_ERROR = 'bad JWT token';
   private static AUTHORIZATION = 'Authorization';
   private static BEARER = 'Bearer';
-  private angolarSecretKey: string;
 
   constructor(private storageService: StorageService,
               private logger: LoggerService,
               private userService: UserService,
               private propertiesService: PropertiesService,
               private eventBusService: EventBusService) {
-    this.angolarSecretKey = propertiesService.angolarSecretKey;
   }
 
   private createAuthHeader(token: string): string {
@@ -32,7 +30,6 @@ export class AuthInterceptor implements HttpInterceptor {
     var headers = request.headers;
     headers = headers
       .set('Content-Type', 'application/json')
-      .set('ANGOLAR_SECRET', this.angolarSecretKey);
 
     const userToken = this.storageService.getUserToken();
     if (userToken !== undefined) {
