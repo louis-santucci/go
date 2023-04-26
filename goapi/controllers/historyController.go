@@ -2,9 +2,8 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
-	"louissantucci/goapi/database"
-	"louissantucci/goapi/models"
 	"louissantucci/goapi/responses"
+	"louissantucci/goapi/services"
 	"net/http"
 )
 
@@ -16,8 +15,10 @@ import (
 // @Success						200 	    {object} 	responses.OKResponse
 // @Router						/history    [get]
 func GetHistory(c *gin.Context) {
-	var historyResults []models.HistoryEntry
-	database.DB.Find(&historyResults)
+	historyResults, err := services.GetHistory()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+	}
 	c.JSON(http.StatusOK, responses.NewOKResponse(historyResults))
 }
 
@@ -30,7 +31,7 @@ func GetHistory(c *gin.Context) {
 // @Failure						500         {object} 	responses.ErrorResponse
 // @Router						/history/reset    [delete]
 func ResetHistory(c *gin.Context) {
-	err := database.DB.Exec("DELETE FROM history_entries").Error
+	err := services.ResetHistory()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return

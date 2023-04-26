@@ -2,16 +2,16 @@ package controllers
 
 import (
 	"github.com/gin-gonic/gin"
+	uuid2 "github.com/google/uuid"
 	"louissantucci/goapi/database"
+	error_constants "louissantucci/goapi/error-constants"
 	"louissantucci/goapi/middlewares/jwt"
 	"louissantucci/goapi/models"
 	"louissantucci/goapi/responses"
+	"louissantucci/goapi/services"
 	"net/http"
-	"regexp"
 	"time"
 )
-
-const URL_REGEX = `https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)`
 
 // GET /redirection
 
@@ -23,9 +23,11 @@ const URL_REGEX = `https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9(
 // @Success						200 	{object} 	responses.OKResponse
 // @Router						/redirection [get]
 func GetRedirections(c *gin.Context) {
-	var redirections []models.Redirection
-
-	database.DB.Find(&redirections)
+	redirections, err := services.GetRedirections()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
 
 	c.JSON(http.StatusOK, responses.NewOKResponse(redirections))
 }
@@ -42,11 +44,15 @@ func GetRedirections(c *gin.Context) {
 // @Failure						404 	{object} 	responses.ErrorResponse
 // @Router						/redirection/{id} [get]
 func GetRedirection(c *gin.Context) {
-	var redirection models.Redirection
-
-	err := database.DB.Where("id = ?", c.Param("id")).First(&redirection).Error
+	idStr := c.Param("id")
+	id, err := uuid2.Parse(idStr)
 	if err != nil {
-		c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, err.Error()))
+		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
+		return
+	}
+	redirection, err := services.GetRedirection(id)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
 
@@ -78,30 +84,16 @@ func IncrementRedirectionView(c *gin.Context) {
 	redirection.LastVisited = time.Now()
 
 	var newHistoryEntry models.HistoryEntry
-	var isLogged = false
 	// Get User ID
 	header := c.GetHeader("Authorization")
-	tokenStr, err := jwt.ExtractBearerToken(header)
+	claim, err := jwt.GetClaimFromToken(header)
 	if err == nil {
-		email, err := jwt.GetEmailFromToken(tokenStr)
-		if err == nil {
-			var user models.User
-
-			err = database.DB.Where("email = ?", email).First(&user).Error
-			if err == nil {
-				newHistoryEntry = models.HistoryEntry{
-					VisitedAt:     redirection.LastVisited,
-					RedirectionId: redirection.ID,
-					UserId:        user.ID,
-				}
-				isLogged = true
-			} else {
-				isLogged = false
-			}
+		newHistoryEntry = models.HistoryEntry{
+			VisitedAt:     redirection.LastVisited,
+			RedirectionId: redirection.ID,
+			UserId:        claim.Id,
 		}
-	}
-
-	if !isLogged {
+	} else {
 		newHistoryEntry = models.HistoryEntry{
 			VisitedAt:     redirection.LastVisited,
 			RedirectionId: redirection.ID,
@@ -146,9 +138,13 @@ func ResetRedirectionView(c *gin.Context) {
 	}
 
 	authHeader := c.GetHeader("Authorization")
-	errCode, err, _ := jwt.IsIdMatchingJwtToken(redirection.ID, authHeader)
+	claim, err := jwt.GetClaimFromToken(authHeader)
 	if err != nil {
-		c.JSON(errCode, responses.NewErrorResponse(errCode, err.Error()))
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		return
+	}
+	if claim.Id != redirection.CreatorId {
+		c.JSON(http.StatusUnauthorized, responses.NewErrorResponse(http.StatusUnauthorized, err.Error()))
 		return
 	}
 
@@ -183,40 +179,36 @@ func ResetRedirectionView(c *gin.Context) {
 // @Failure						500 	{object} 	responses.ErrorResponse
 // @Router						/redirection/{id} [post]
 func EditRedirection(c *gin.Context) {
-	var redirection models.Redirection
-
-	err := database.DB.Where("id = ?", c.Param("id")).First(&redirection).Error
-	if err != nil {
-		c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, err.Error()))
-		return
-	}
-
-	authHeader := c.GetHeader("Authorization")
-	errCode, err, _ := jwt.IsIdMatchingJwtToken(redirection.CreatorId, authHeader)
-	if err != nil {
-		c.JSON(errCode, responses.NewErrorResponse(errCode, err.Error()))
-		return
-	}
-
 	// Input validation
 	var input models.RedirectionInput
-	err = c.ShouldBindJSON(&input)
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
+		return
+	}
+	idStr := c.Param("id")
+	id, err := uuid2.Parse(idStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
 		return
 	}
 
-	// Check redirection format
-	if !ValidateRedirectUrlFormat(input.RedirectUrl) {
-		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, "Redirection URL must be a valid URL beginning with http[s]://"))
+	authHeader := c.GetHeader("Authorization")
+	claim, err := jwt.GetClaimFromToken(authHeader)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
-
-	redirection.Shortcut = input.Shortcut
-	redirection.RedirectUrl = input.RedirectUrl
-	redirection.UpdatedAt = time.Now()
-	err = database.DB.Model(&redirection).Updates(redirection).Error
+	redirection, err := services.EditRedirection(id, claim.Id, input)
 	if err != nil {
+		if err.Error() == error_constants.ForbiddenError {
+			c.JSON(http.StatusUnauthorized, responses.NewErrorResponse(http.StatusUnauthorized, err.Error()))
+			return
+		}
+		if err.Error() == error_constants.WrongRedirectionFormatError {
+			c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
+			return
+		}
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
@@ -247,46 +239,25 @@ func CreateRedirection(c *gin.Context) {
 		return
 	}
 
-	// Get User ID
 	header := c.GetHeader("Authorization")
-	tokenStr, err := jwt.ExtractBearerToken(header)
+	claim, err := jwt.GetClaimFromToken(header)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
-
-	email, err := jwt.GetEmailFromToken(tokenStr)
+	redirection, err := services.CreateRedirection(claim.Id, &input)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
-		return
-	}
-	var user models.User
-
-	err = database.DB.Where("email = ?", email).First(&user).Error
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
-		return
-	}
-
-	// Check redirection format
-	if !ValidateRedirectUrlFormat(input.RedirectUrl) {
-		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, "Redirection URL must be a valid URL beginning with http[s]://"))
+		switch err.Error() {
+		case error_constants.WrongRedirectionFormatError:
+			c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
+		case error_constants.NotFoundError:
+			c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, err.Error()))
+		default:
+			c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		}
 		return
 	}
 
-	// Redirection creation
-	redirection := models.Redirection{
-		Shortcut:    input.Shortcut,
-		RedirectUrl: input.RedirectUrl,
-		Views:       0,
-		CreatedAt:   time.Now(),
-		CreatorId:   user.ID,
-	}
-	err = database.DB.Create(&redirection).Error
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
-		return
-	}
 	c.JSON(http.StatusOK, responses.NewOKResponse(redirection))
 }
 
@@ -305,41 +276,31 @@ func CreateRedirection(c *gin.Context) {
 // @Failure						500 	{object} 	responses.ErrorResponse
 // @Router						/redirection/{id} [delete]
 func DeleteRedirection(c *gin.Context) {
-	// Gets model if exists
-	var redirection models.Redirection
-	id := c.Param("id")
-	err := database.DB.Where("id = ?", id).First(&redirection).Error
+	idStr := c.Param("id")
+	id, err := uuid2.Parse(idStr)
 	if err != nil {
-		c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, err.Error()))
+		c.JSON(http.StatusBadRequest, responses.NewErrorResponse(http.StatusBadRequest, err.Error()))
 		return
 	}
-
 	authHeader := c.GetHeader("Authorization")
-	errCode, err, _ := jwt.IsIdMatchingJwtToken(redirection.CreatorId, authHeader)
-	if err != nil {
-		c.JSON(errCode, responses.NewErrorResponse(errCode, err.Error()))
-		return
-	}
-
-	// Deletion
-	err = database.DB.Delete(&redirection).Error
+	claim, err := jwt.GetClaimFromToken(authHeader)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
 		return
 	}
-
-	// Delete all history entries for this redirection
-	err = database.DB.Delete(&models.HistoryEntry{}, "redirection_id = ?", redirection.ID).Error
+	err = services.DeleteRedirection(id, claim.Id)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		switch err.Error() {
+		case error_constants.UnauthorizedError:
+			c.JSON(http.StatusUnauthorized, responses.NewErrorResponse(http.StatusUnauthorized, err.Error()))
+		case error_constants.NotFoundError:
+			c.JSON(http.StatusNotFound, responses.NewErrorResponse(http.StatusNotFound, err.Error()))
+		default:
+			c.JSON(http.StatusInternalServerError, responses.NewErrorResponse(http.StatusInternalServerError, err.Error()))
+		}
 		return
 	}
 
-	responseData := "Redirection #" + id + " deleted"
+	responseData := "Redirection #" + idStr + " deleted"
 	c.JSON(http.StatusOK, responses.NewOKResponse(responseData))
-}
-
-func ValidateRedirectUrlFormat(url string) bool {
-	regex, _ := regexp.Compile(URL_REGEX)
-	return regex.MatchString(url)
 }
