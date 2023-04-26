@@ -51,4 +51,8 @@ export class UserService {
   getUserInfo(): Observable<OkResponse<UserInfo>> {
     return this.http.get<OkResponse<UserInfo>>(this.userUrl + '/info', httpOptions);
   }
+
+  deleteUser(): Observable<OkResponse<String>> {
+    return this.http.delete<OkResponse<String>>(this.userUrl + '/delete', httpOptions);
+  }
 }
