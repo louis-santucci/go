@@ -5,18 +5,23 @@ import {LoggerService} from "../../services/logger.service";
 import {ToastLevel} from "../../models/toast-level";
 import {AlertService} from "../../services/alert.service";
 import {DateUtils} from "../../utils/date-utils";
+import {Router} from "@angular/router";
+import {EventBusService} from "../../services/event-bus.service";
+import {EventData} from "../../models/event-data";
 
 @Component({
   selector: 'app-user-info',
   templateUrl: './user-info.component.html',
   styleUrls: ['./user-info.component.css']
 })
-export class UserInfoComponent implements OnInit{
+export class UserInfoComponent implements OnInit {
   public connectedUser?: UserInfo;
 
   public constructor(private userService: UserService,
                      private logger: LoggerService,
-                     private alertService: AlertService) {
+                     private alertService: AlertService,
+                     private router: Router,
+                     private eventBusService: EventBusService) {
   }
 
   ngOnInit() {
@@ -37,11 +42,24 @@ export class UserInfoComponent implements OnInit{
   }
 
   public openEdition() {
-
+    this.router.navigateByUrl("/user/edit");
   }
 
   public deleteUser() {
-
+    this.userService.deleteUser().subscribe({
+      next: res => {
+        this.logger.log({status: res.status, data: res.data});
+        if (res.status === 200) {
+          this.eventBusService.emit(new EventData('logout', null));
+        }
+      },
+      error: error => {
+        this.logger.error(error.message);
+        this.logger.toast(ToastLevel.ERROR, error.error.error, 'deleteUser() ERROR');
+        this.alertService.error(error.error.error, false);
+      },
+      complete: () => this.logger.info('deleteUser() DONE')
+    })
   }
 
   public getCleanDate(date: string | undefined): string {
