@@ -33,23 +33,19 @@ func DeleteUser(id uuid.UUID) error {
 	return database.DB.Exec("DELETE FROM users WHERE id = ?", id).Error
 }
 
-func EditUser(id uuid.UUID, userId uuid.UUID, input models.UserInput) (*models.User, error) {
-	user, err := GetUser(id)
+func EditUser(userId uuid.UUID, input models.UserInput) (*models.User, error) {
+	user, err := GetUser(userId)
 	if err != nil {
 		return nil, err
 	}
-	if userId != user.ID {
-		return nil, errors.New(error_constants.ForbiddenError)
+	credentialsError := user.ComparePassword(input.Password)
+	if credentialsError != nil {
+		return nil, errors.New(error_constants.UnauthorizedError)
 	}
 
 	user.Name = input.Name
 	user.Email = input.Email
 	user.UpdatedAt = time.Now()
-
-	err = user.HashPassword(input.Password)
-	if err != nil {
-		return nil, err
-	}
 
 	err = database.DB.Model(user).Updates(user).Error
 	if err != nil {
@@ -59,23 +55,23 @@ func EditUser(id uuid.UUID, userId uuid.UUID, input models.UserInput) (*models.U
 	return user, nil
 }
 
-func LoginUser(loginRequest models.UserLogin) (*string, error) {
+func LoginUser(email string, password string) (*models.UserInfo, *string, error) {
 	var user models.User
 	// Credentials check
-	err := database.DB.Where("email = ?", loginRequest.Email).First(&user).Error
+	err := database.DB.Where("email = ?", email).First(&user).Error
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	credentialsError := user.ComparePassword(loginRequest.Password)
+	credentialsError := user.ComparePassword(password)
 	if credentialsError != nil {
-		return nil, errors.New(error_constants.UnauthorizedError)
+		return nil, nil, errors.New(error_constants.UnauthorizedError)
 	}
 	tokenStr, err := jwt.GenerateJWT(&user)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return &tokenStr, nil
+	return GetUserInfo(user.ID), &tokenStr, nil
 }
 
 func GetUserInfo(userId uuid.UUID) *models.UserInfo {

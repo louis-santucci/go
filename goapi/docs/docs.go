@@ -428,7 +428,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/edit/{id}": {
+        "/user/edit": {
             "post": {
                 "security": [
                     {
@@ -687,6 +687,26 @@ const docTemplate = `{
                 }
             }
         },
+        "models.UserInfo": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
         "models.UserInput": {
             "type": "object",
             "properties": {
@@ -724,14 +744,14 @@ const docTemplate = `{
         "responses.JWTResponse": {
             "type": "object",
             "properties": {
-                "email": {
-                    "type": "string"
-                },
                 "status": {
                     "type": "integer"
                 },
                 "token": {
                     "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.UserInfo"
                 }
             }
         },

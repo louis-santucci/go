@@ -10,6 +10,19 @@ definitions:
     - redirect_url
     - shortcut
     type: object
+  models.UserInfo:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      updated_at:
+        type: string
+    type: object
   models.UserInput:
     properties:
       email:
@@ -34,12 +47,12 @@ definitions:
     type: object
   responses.JWTResponse:
     properties:
-      email:
-        type: string
       status:
         type: integer
       token:
         type: string
+      user:
+        $ref: '#/definitions/models.UserInfo'
     type: object
   responses.OKResponse:
     properties:
@@ -318,7 +331,7 @@ paths:
       summary: Deletes User with Auth header
       tags:
       - user
-  /user/edit/{id}:
+  /user/edit:
     post:
       consumes:
       - application/json
