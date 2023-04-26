@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
       this.userService.login(<string>this.loginFormGroup.value.email, <string>this.loginFormGroup.value.password)
         .subscribe({
           next: data => {
-            this.storageService.saveUser(data.token, data.email);
+            this.storageService.saveUser(data.token, data.user.email);
             this.router.navigate([this.returnUrl])
               .then(() => {
                 window.location.reload();
