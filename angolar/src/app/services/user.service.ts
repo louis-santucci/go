@@ -55,4 +55,13 @@ export class UserService {
   deleteUser(): Observable<OkResponse<String>> {
     return this.http.delete<OkResponse<String>>(this.userUrl + '/delete', httpOptions);
   }
+
+  editUser(email: string, name: string, password: string): Observable<JWTResponse> {
+    const userInput: UserInput = {
+      email,
+      name,
+      password
+    };
+    return this.http.post<JWTResponse>(this.userUrl + '/edit', userInput, httpOptions);
+  }
 }
