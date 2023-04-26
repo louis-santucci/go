@@ -10,6 +10,7 @@ import {AuthGuard} from "./guards/auth.guard";
 import {ErrorNotFoundComponent} from "./components/errors/error-not-found.component";
 import {ErrorUnauthorizedComponent} from "./components/errors/error-unauthorized.component";
 import {HistoryComponent} from "./components/history/history.component";
+import {UserEditionComponent} from "./components/user-edition/user-edition.component";
 
 const routes: Routes = [
   {path: '', component: HomeComponent},
@@ -19,6 +20,7 @@ const routes: Routes = [
   {path: 'redirection/new', component: RedirectionCreationComponent, canActivate: [AuthGuard]},
   {path: 'redirection/edit/:id', component: RedirectionEditionComponent, canActivate: [AuthGuard]},
   {path: 'user/info', component: UserInfoComponent, canActivate: [AuthGuard]},
+  {path: 'user/edit', component: UserEditionComponent, canActivate: [AuthGuard]},
   {path: 'error/notFound', component: ErrorNotFoundComponent},
   {path: 'error/unauthorized', component: ErrorUnauthorizedComponent},
   {path: '**', redirectTo: 'error/notFound'}

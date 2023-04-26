@@ -31,9 +31,10 @@ import {MatTooltipModule} from "@angular/material/tooltip";
 import {ErrorNotFoundComponent} from './components/errors/error-not-found.component';
 import {MatCardModule} from "@angular/material/card";
 import {ErrorUnauthorizedComponent} from './components/errors/error-unauthorized.component';
-import { HistoryComponent } from './components/history/history.component';
-import { HistoryTableComponent } from './components/tables/history-table/history-table.component';
+import {HistoryComponent} from './components/history/history.component';
+import {HistoryTableComponent} from './components/tables/history-table/history-table.component';
 import {MatPaginatorModule} from "@angular/material/paginator";
+import {UserEditionComponent} from './components/user-edition/user-edition.component';
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import {MatPaginatorModule} from "@angular/material/paginator";
     ErrorUnauthorizedComponent,
     HistoryComponent,
     HistoryTableComponent,
+    UserEditionComponent,
   ],
   imports: [
     BrowserModule,
